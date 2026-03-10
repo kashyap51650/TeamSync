@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
+  console.log("Received refresh token request", req);
   const token = req.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
   if (!token) {
