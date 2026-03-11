@@ -8,16 +8,14 @@ import { useAuthStore } from "@/store/auth";
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
 
-  console.log("DashboardLayout - user:", user, "isLoading:", isLoading);
-
   // Initialize SSE for real-time updates
-  useSSE();
+  // useSSE();
 
   useEffect(() => {
     if (!isLoading && !user) {

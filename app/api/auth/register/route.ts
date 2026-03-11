@@ -6,7 +6,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "@/server/services/auth.service";
-import { setRefreshTokenCookie } from "@/lib/auth";
+import { setAccessTokenCookie, setRefreshTokenCookie } from "@/lib/auth";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     const refreshToken = await generateRefreshToken(user.id);
 
     const response = NextResponse.json({ user, accessToken }, { status: 201 });
+    setAccessTokenCookie(response, accessToken);
     setRefreshTokenCookie(response, refreshToken);
 
     return response;

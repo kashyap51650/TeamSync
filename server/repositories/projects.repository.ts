@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import type { ProjectStatus } from "@/types";
 
+export async function getOrgId(userId: string): Promise<string | null> {
+  const membership = await prisma.teamMember.findFirst({
+    where: { userId },
+    orderBy: { joinedAt: "desc" },
+  });
+  return membership?.organizationId ?? null;
+}
+
 export async function findProjectsByOrg(organizationId: string) {
   return prisma.project.findMany({
     where: { organizationId },

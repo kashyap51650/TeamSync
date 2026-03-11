@@ -1,4 +1,3 @@
-// src/app/api/events/route.ts
 import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { sseManager } from "@/lib/sse";

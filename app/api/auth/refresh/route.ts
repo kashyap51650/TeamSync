@@ -3,12 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { rotateRefreshToken } from "@/server/services/auth.service";
 import {
   REFRESH_TOKEN_COOKIE,
+  setAccessTokenCookie,
+  clearAccessTokenCookie,
   setRefreshTokenCookie,
   clearRefreshTokenCookie,
 } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  console.log("Received refresh token request", req);
   const token = req.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
   if (!token) {
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
     const { user, accessToken, refreshToken } = await rotateRefreshToken(token);
 
     const response = NextResponse.json({ user, accessToken }, { status: 200 });
+    setAccessTokenCookie(response, accessToken);
     setRefreshTokenCookie(response, refreshToken);
 
     return response;
@@ -27,6 +29,7 @@ export async function POST(req: NextRequest) {
       { error: "Invalid or expired refresh token" },
       { status: 401 },
     );
+    clearAccessTokenCookie(response);
     clearRefreshTokenCookie(response);
     return response;
   }

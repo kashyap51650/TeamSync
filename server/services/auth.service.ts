@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import type { AuthUser, JWTPayload } from "@/types";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "super-secret-jwt-key-change-in-production",
@@ -67,6 +68,7 @@ export async function loginUser(email: string, password: string) {
   if (!user) throw new Error("Invalid credentials");
 
   const valid = await bcrypt.compare(password, user.passwordHash);
+
   if (!valid) throw new Error("Invalid credentials");
 
   return {
