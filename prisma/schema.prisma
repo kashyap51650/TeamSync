@@ -24,12 +24,13 @@ model User {
 
     // Relations
     teamMemberships TeamMember[]
-    assignedTasks   Task[]         @relation("AssignedTo")
-    createdTasks    Task[]         @relation("CreatedBy")
+    assignedTasks   Task[]          @relation("AssignedTo")
+    createdTasks    Task[]          @relation("CreatedBy")
     taskActivities  TaskActivity[]
     notifications   Notification[]
     refreshTokens   RefreshToken[]
     createdProjects Project[]
+    projectMembers  ProjectMember[]
 }
 
 model RefreshToken {
@@ -120,12 +121,14 @@ model ProjectMember {
     userId    String
 
     project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([projectId, userId])
 }
 
 // ─────────────────────────────────────────────
 // TASKS
+
 // ─────────────────────────────────────────────
 
 enum TaskStatus {

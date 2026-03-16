@@ -71,6 +71,11 @@ export interface TeamMember {
   user: Pick<User, "id" | "name" | "email" | "avatarUrl">;
 }
 
+export type TeamMemberDropdownItem = {
+  id: string;
+  name: string;
+};
+
 // ─── Project ─────────────────────────────────────────────────────────────────
 export interface Project {
   id: string;
@@ -79,11 +84,11 @@ export interface Project {
   status: ProjectStatus;
   organizationId: string;
   createdById: string;
-  startDate?: string | null;
-  endDate?: string | null;
+  startDate?: Date | null;
+  endDate?: Date | null;
   color: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   _count?: {
     tasks: number;
     members: number;
@@ -100,11 +105,11 @@ export interface Task {
   projectId: string;
   assignedToId?: string | null;
   createdById: string;
-  dueDate?: string | null;
+  dueDate?: Date | null;
   position: number;
-  completedAt?: string | null;
-  createdAt: string;
-  updatedAt: string;
+  completedAt?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
   project?: Pick<Project, "id" | "name" | "color">;
   assignedTo?: Pick<User, "id" | "name" | "avatarUrl"> | null;
   createdBy?: Pick<User, "id" | "name">;

@@ -34,7 +34,7 @@ export const GET = requireAuth(
     if (!orgId)
       return NextResponse.json({ error: "No organization" }, { status: 404 });
 
-    const project = await repo.findProjectById(id, orgId);
+    const project = await repo.findProjectById(id);
     if (!project)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 

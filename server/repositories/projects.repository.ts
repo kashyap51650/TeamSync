@@ -20,13 +20,43 @@ export async function findProjectsByOrg(organizationId: string) {
   });
 }
 
-export async function findProjectById(id: string, organizationId: string) {
+export async function findProjectById(id: string) {
   return prisma.project.findFirst({
-    where: { id, organizationId },
+    where: { id },
     include: {
       createdBy: { select: { id: true, name: true, avatarUrl: true } },
-      members: true,
+      members: {
+        include: {
+          user: {
+            select: { id: true, name: true, email: true, avatarUrl: true },
+          },
+        },
+      },
+      tasks: true,
       _count: { select: { tasks: true } },
+    },
+  });
+}
+
+export async function findProjectMembers(projectId: string) {
+  return prisma.projectMember.findMany({
+    where: { projectId },
+    include: {
+      user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+      project: {
+        select: {
+          tasks: { select: { assignedToId: true, status: true } },
+        },
+      },
+    },
+  });
+}
+
+export async function findProjectTasks(projectId: string) {
+  return prisma.task.findMany({
+    where: { projectId },
+    include: {
+      assignedTo: { select: { id: true, name: true, avatarUrl: true } },
     },
   });
 }
@@ -51,7 +81,6 @@ export async function createProject(data: {
 
 export async function updateProject(
   id: string,
-  organizationId: string,
   data: Partial<{
     name: string;
     description: string;

@@ -9,16 +9,6 @@ export default async function ProjectsPage() {
   const projects = await fetchProjects(user?.sub);
 
   const renderContent = () => {
-    // if (isLoading) {
-    //   return (
-    //     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    //       {new Array(6).map((_, i) => (
-    //         <Skeleton key={i / 10} className="h-48 rounded-xl" />
-    //       ))}
-    //     </div>
-    //   );
-    // }
-
     if (projects?.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16">

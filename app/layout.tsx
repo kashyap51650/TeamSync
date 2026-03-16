@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
+import setupLocatorUI from "@locator/runtime";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
   },
   description: "Track projects, tasks, and team performance in real time.",
 };
+
+// if (process.env.NODE_ENV === "development") {
+setupLocatorUI();
+// }
 
 export default function RootLayout({
   children,
