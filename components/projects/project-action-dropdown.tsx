@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { CreateTaskDialog } from "../task/create-task-dialog";
+import { AddMemberDialog } from "./add-member-dialog";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { deleteProjectAction } from "@/actions/project";
 import { useState } from "react";
@@ -26,12 +27,12 @@ export function ProjectActionDropdown({
 }>) {
   const [creatingTask, setCreatingTask] = useState(false);
   const [editingProject, setEditingProject] = useState(false);
+  const [addingMember, setAddingMember] = useState(false);
   const [createForStatus, setCreateForStatus] = useState<TaskStatus>("TODO");
 
   return (
     <>
       <Button
-        variant="outline"
         size="sm"
         onClick={() => {
           setCreateForStatus("TODO");
@@ -39,6 +40,9 @@ export function ProjectActionDropdown({
         }}
       >
         <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Task
+      </Button>
+      <Button size="sm" onClick={() => setAddingMember(true)}>
+        <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Member
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -76,6 +80,13 @@ export function ProjectActionDropdown({
           project={project}
         />
       )}
+
+      <AddMemberDialog
+        open={addingMember}
+        onClose={() => setAddingMember(false)}
+        projectId={projectId}
+        users={members}
+      />
     </>
   );
 }

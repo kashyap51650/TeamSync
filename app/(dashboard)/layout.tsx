@@ -44,7 +44,7 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopNav />
         <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto max-w-7xl p-6">{children}</div>
+          <div className="p-6">{children}</div>
         </main>
       </div>
     </div>

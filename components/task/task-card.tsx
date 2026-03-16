@@ -1,14 +1,5 @@
 // UI
-"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
@@ -17,28 +8,23 @@ import {
 } from "@/components/ui/tooltip";
 
 // Icons
-import { Calendar, GripVertical, MoreHorizontal, Trash2 } from "lucide-react";
+import { Calendar, GripVertical } from "lucide-react";
 
-import { KANBAN_COLUMNS } from "@/lib/constant";
 import {
   TASK_PRIORITY_CONFIG,
-  TASK_STATUS_CONFIG,
   cn,
   formatDate,
   getInitials,
   isDueSoon,
   isOverdue,
 } from "@/lib/utils";
-import type { Task, TaskStatus } from "@/types";
+import type { Task } from "@/types";
+import { TaskListAction } from "./task-list-action";
 
 export function TaskCard({
   task,
-  onStatusChange,
-  onDelete,
 }: Readonly<{
   task: Task;
-  onStatusChange: (id: string, status: TaskStatus) => void;
-  onDelete: (id: string) => void;
 }>) {
   const priorityConfig = TASK_PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.dueDate);
@@ -73,41 +59,7 @@ export function TaskCard({
             >
               {task.title}
             </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <MoreHorizontal className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                {KANBAN_COLUMNS.map((s) => (
-                  <DropdownMenuItem
-                    key={s}
-                    onClick={() => onStatusChange(task.id, s)}
-                    className={cn(task.status === s && "font-medium")}
-                  >
-                    <span
-                      className={cn(
-                        "mr-2 h-2 w-2 rounded-full",
-                        TASK_STATUS_CONFIG[s].color,
-                      )}
-                    />
-                    {TASK_STATUS_CONFIG[s].label}
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onClick={() => onDelete(task.id)}
-                >
-                  <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <TaskListAction task={task} />
           </div>
 
           {/* Meta row */}

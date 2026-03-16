@@ -1,25 +1,27 @@
-"use client";
-
-import { deleteTaskAction, updateTaskAction } from "@/actions/task";
 import { STATUS_ICONS } from "@/lib/constant";
 import { cn, TASK_STATUS_CONFIG } from "@/lib/utils";
 import { Task, TaskStatus } from "@/types";
-import { Plus } from "lucide-react";
+import {
+  IconOnlyTaskCreateButton,
+  InlineTaskCreateButton,
+} from "./task/add-task-buttons";
 import { TaskCard } from "./task/task-card";
-import { Button } from "./ui/button";
-
 export function KanbanColumn({
+  projectId,
   status,
   tasks,
+  members,
 }: Readonly<{
+  projectId: string;
   status: TaskStatus;
   tasks: Task[];
+  members: { id: string; name: string }[];
 }>) {
   const config = TASK_STATUS_CONFIG[status];
   const StatusIcon = STATUS_ICONS[status];
 
   return (
-    <div className="flex min-w-[260px] max-w-[260px] flex-col rounded-xl bg-muted/30 border border-border/50">
+    <div className="flex flex-col rounded-xl bg-muted/30 border border-border/50">
       {/* Column header */}
       <div className="flex items-center justify-between px-3 py-2.5">
         <div className="flex items-center gap-2">
@@ -31,14 +33,11 @@ export function KanbanColumn({
             {tasks.length}
           </span>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-          // onClick={() => onAddTask(status)}
-        >
-          <Plus className="h-3.5 w-3.5" />
-        </Button>
+        <IconOnlyTaskCreateButton
+          projectId={projectId}
+          members={members}
+          createForStatus={status}
+        />
       </div>
 
       <div className={cn("mx-2 mb-2 h-0.5 rounded-full", config.color)} />
@@ -46,24 +45,18 @@ export function KanbanColumn({
       {/* Tasks */}
       <div
         className="flex flex-1 flex-col gap-2 overflow-y-auto p-2 pt-1"
-        style={{ maxHeight: "calc(100vh - 340px)" }}
+        // style={{ maxHeight: "calc(100vh - 340px)" }}
       >
         {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onStatusChange={(id, status) => updateTaskAction(id, { status })}
-            onDelete={deleteTaskAction}
-          />
+          <TaskCard key={task.id} task={task} />
         ))}
 
         {tasks.length === 0 && (
-          <button
-            // onClick={() => onAddTask(status)}
-            className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 p-3 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary/70"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add task
-          </button>
+          <InlineTaskCreateButton
+            projectId={projectId}
+            createForStatus={status}
+            members={members}
+          />
         )}
       </div>
     </div>

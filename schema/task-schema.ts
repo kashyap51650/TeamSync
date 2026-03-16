@@ -17,3 +17,7 @@ export const createTaskSchema = z.object({
 });
 
 export type CreateTaskForm = z.infer<typeof createTaskSchema>;
+
+export const updateTaskSchema = createTaskSchema.partial();
+
+export type UpdateTaskForm = z.infer<typeof updateTaskSchema>;

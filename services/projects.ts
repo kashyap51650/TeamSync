@@ -5,7 +5,6 @@ import {
   findProjectsByOrg,
   findProjectTasks,
 } from "@/server/repositories/projects.repository";
-import { Project } from "@/types";
 import { cacheTag } from "next/cache";
 
 async function getOrgId(userId: string): Promise<string | null> {
@@ -26,7 +25,17 @@ export async function fetchProjects(userId?: string) {
         throw new Error("No organization found for user");
       }
       const projects = await findProjectsByOrg(orgId);
-      return projects;
+
+      // Filter projects to include only those where the user is a member or creator
+      const filteredProjects = projects.filter((project) => {
+        const isMember = project.members.some(
+          (member) => member.userId === userId,
+        );
+        const isCreator = project.createdById === userId;
+        return isMember || isCreator;
+      });
+
+      return filteredProjects;
     }
   } catch (error) {
     console.error("Error fetching projects", error);
@@ -45,6 +54,8 @@ export async function fetchMembersByProject(projectId: string) {
 }
 
 export async function fetchTasksByProject(projectId: string) {
+  "use cache";
+  cacheTag(`tasks-list-${projectId}`);
   try {
     const tasks = await findProjectTasks(projectId);
     return tasks;

@@ -4,7 +4,6 @@ import { cn, TASK_STATUS_CONFIG } from "@/lib/utils";
 import { fetchTasksByProject } from "@/services/projects";
 import { Task, TaskStatus } from "@/types";
 import { TaskListRow } from "../task/task-list-raw";
-import { deleteTaskAction, updateTaskAction } from "@/actions/task";
 
 export const ProjectTasksTab = async ({ projectId }: { projectId: string }) => {
   const tasks = await fetchTasksByProject(projectId);
@@ -38,19 +37,13 @@ export const ProjectTasksTab = async ({ projectId }: { projectId: string }) => {
                     TASK_STATUS_CONFIG[status].color,
                   )}
                 />
-                <span className="text-[11px] font-semibold text-muted-foreground">
+                <span className="font-semibold text-muted-foreground">
                   {TASK_STATUS_CONFIG[status].label} · {col.length}
                 </span>
               </div>
+              <hr className="mx-2 mb-2 h-0.5 rounded-full border-0 bg-border" />
               {col.map((task) => (
-                <TaskListRow
-                  key={task.id}
-                  task={task}
-                  onStatusChange={(id, status) =>
-                    updateTaskAction(id, { status })
-                  }
-                  onDelete={deleteTaskAction}
-                />
+                <TaskListRow key={task.id} task={task} />
               ))}
             </div>
           );

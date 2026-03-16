@@ -13,6 +13,7 @@ export async function findProjectsByOrg(organizationId: string) {
   return prisma.project.findMany({
     where: { organizationId },
     include: {
+      members: true,
       createdBy: { select: { id: true, name: true, avatarUrl: true } },
       _count: { select: { tasks: true, members: true } },
     },
@@ -97,6 +98,15 @@ export async function updateProject(
       createdBy: { select: { id: true, name: true, avatarUrl: true } },
       _count: { select: { tasks: true, members: true } },
     },
+  });
+}
+
+export async function addProjectMembers(projectId: string, userIds: string[]) {
+  if (userIds.length === 0) return;
+
+  return prisma.projectMember.createMany({
+    data: userIds.map((userId) => ({ projectId, userId })),
+    skipDuplicates: true,
   });
 }
 

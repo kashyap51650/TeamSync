@@ -13,15 +13,15 @@ import {
   Users,
 } from "lucide-react";
 
-import { deleteTaskAction, updateTaskAction } from "@/actions/task";
-import { KanbanColumn } from "@/components/kanban-columns";
+import { KanbanBoardTab } from "@/components/projects/kanban-board-tab";
 import { ProjectActionDropdown } from "@/components/projects/project-action-dropdown";
 import { ProjectAnalyticsTab } from "@/components/projects/project-analytics-tab";
 import { ProjectMemberCard } from "@/components/projects/project-members";
-import { KANBAN_COLUMNS } from "@/lib/constant";
-import { fetchProjectById } from "@/services/projects";
-import { Task, TaskStatus } from "@/types";
 import { ProjectTasksTab } from "@/components/projects/project-tasks";
+import { fetchProjectById } from "@/services/projects";
+import { fetchTeamMembers, fetchUsers } from "@/services/user";
+import { Suspense } from "react";
+import { getAuthUser } from "@/lib/auth";
 
 export default async function ProjectPage({
   params,
@@ -30,25 +30,11 @@ export default async function ProjectPage({
 }>) {
   const { id } = await params;
 
-  // fake loading delay
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
   const project = await fetchProjectById(id);
 
-  console.log("Fetching project :", project);
-
-  const members = project.members.map((member) => ({
-    id: member.id,
-    name: member.user.name,
-  }));
-
-  const tasksByStatus = KANBAN_COLUMNS.reduce(
-    (acc, status) => {
-      acc[status] = project.tasks.filter((t) => t.status === status);
-      return acc;
-    },
-    {} as Record<TaskStatus, Task[]>,
-  );
+  const members = await fetchUsers();
+  const user = await getAuthUser();
+  const teamMembers = await fetchTeamMembers(user?.sub);
 
   if (!project) {
     return (
@@ -82,7 +68,7 @@ export default async function ProjectPage({
           <div className="col-span-2 flex shrink-0 items-center justify-end gap-2">
             <ProjectActionDropdown
               projectId={id}
-              members={members}
+              members={teamMembers}
               project={project}
             />
           </div>
@@ -109,28 +95,9 @@ export default async function ProjectPage({
 
           {/* ── Board Tab ── */}
           <TabsContent value="board" className="mt-0">
-            {/* {tasksLoading ? (
-              <div className="flex gap-3 overflow-x-auto pb-4"> */}
-            {/* {KANBAN_COLUMNS.map((s) => (
-              <div key={s} className="min-w-[260px] space-y-2">
-                <Skeleton className="h-8 rounded-lg" />
-                {[...Array(2)].map((_, i) => (
-                  <Skeleton key={i} className="h-24 rounded-lg" />
-                ))}
-              </div>
-            ))} */}
-            {/* </div> */}
-            {/* ) : ( */}
-            <div className="flex gap-3 overflow-x-auto pb-4">
-              {KANBAN_COLUMNS.map((status) => (
-                <KanbanColumn
-                  key={status}
-                  status={status}
-                  tasks={tasksByStatus[status]}
-                />
-              ))}
-            </div>
-            {/* )} */}
+            <Suspense fallback={<div>Loading board...</div>}>
+              <KanbanBoardTab projectId={id} />
+            </Suspense>
           </TabsContent>
 
           {/* ── List Tab ── */}

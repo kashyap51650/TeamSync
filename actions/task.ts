@@ -40,7 +40,7 @@ export const createTaskAction = async (data: CreateTaskActionData) => {
     projectId,
     createdById: user.sub,
   });
-  updateTag("tasks-list");
+  updateTag("tasks-list-" + projectId);
   return task;
 };
 export const updateTaskAction = async (
@@ -63,11 +63,11 @@ export const updateTaskAction = async (
     assignedToId,
     dueDate: dueDate ? new Date(dueDate) : undefined,
   });
-  updateTag("tasks-list");
+  updateTag("tasks-list-" + task.projectId);
   return task;
 };
 
-export const deleteTaskAction = async (taskId: string) => {
+export const deleteTaskAction = async (taskId: string, projectId: string) => {
   const user = await getAuthUser();
 
   if (!user) {
@@ -75,5 +75,5 @@ export const deleteTaskAction = async (taskId: string) => {
   }
 
   await deleteTask(taskId);
-  updateTag("tasks-list");
+  updateTag("tasks-list-" + projectId);
 };

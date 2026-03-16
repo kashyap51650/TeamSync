@@ -66,7 +66,7 @@ export async function createTask(data: {
     _max: { position: true },
   });
 
-  return prisma.task.create({
+  const task = prisma.task.create({
     data: {
       ...data,
       status: data.status ?? "BACKLOG",
@@ -80,6 +80,15 @@ export async function createTask(data: {
       project: { select: { id: true, name: true, color: true } },
     },
   });
+
+  prisma.projectMember.create({
+    data: {
+      projectId: data.projectId,
+      userId: data.assignedToId ?? data.createdById,
+    },
+  });
+
+  return task;
 }
 
 export async function updateTask(

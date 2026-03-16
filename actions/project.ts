@@ -4,6 +4,7 @@ import { getAuthUser } from "@/lib/auth";
 import {
   createProject,
   deleteProject,
+  addProjectMembers,
   getOrgId,
   updateProject,
 } from "@/server/repositories/projects.repository";
@@ -12,6 +13,16 @@ import { revalidateTag, updateTag } from "next/cache";
 export const deleteProjectAction = async (id: string) => {
   await deleteProject(id);
   updateTag("projects-list");
+};
+
+export const addProjectMembersAction = async (
+  projectId: string,
+  userIds: string[],
+) => {
+  const user = await getAuthUser();
+  if (!user) throw new Error("Unauthorized");
+  await addProjectMembers(projectId, userIds);
+  updateTag(`project-${projectId}`);
 };
 
 export const createProjectAction = async (data: {
