@@ -5,8 +5,10 @@ import { fetchOrganizationByUser } from "@/services/organization";
 
 export default async function DashboardLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { slug: string };
 }>) {
   // Initialize SSE for real-time updates
   // useSSE();
@@ -14,8 +16,6 @@ export default async function DashboardLayout({
   const user = await getAuthUser()!;
 
   const organizations = await fetchOrganizationByUser(user?.sub);
-
-  console.log("Organizations for user:", organizations);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

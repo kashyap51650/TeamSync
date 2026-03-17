@@ -9,10 +9,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export async function DashboardStats() {
+export async function DashboardStats({
+  orgId,
+}: Readonly<{
+  orgId: string;
+}>) {
   const user = await getAuthUser();
-  const tasks = await fetchTasks(user?.sub);
-  const stats = await fetchOrganizationAnalytics(user?.sub);
+  const tasks = await fetchTasks(user?.sub, orgId);
+  const stats = await fetchOrganizationAnalytics(user?.sub, orgId);
 
   const myOpenTasks =
     tasks?.filter((t) => t.status !== "DONE" && t.status !== "CANCELLED")

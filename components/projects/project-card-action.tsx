@@ -27,7 +27,7 @@ export function ProjectCardAction({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href={`/projects/${projectId}`}>
+          <Link href={`projects/${projectId}`}>
             <ExternalLink className="mr-2 h-4 w-4" /> Open
           </Link>
         </DropdownMenuItem>

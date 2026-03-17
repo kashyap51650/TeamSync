@@ -1,12 +1,19 @@
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectHeader } from "@/components/projects/project-header";
 import { getAuthUser } from "@/lib/auth";
+import { fetchOrganizationBySlug } from "@/services/organization";
 import { fetchProjects } from "@/services/projects";
 import { FolderKanban } from "lucide-react";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  params,
+}: Readonly<{
+  params: Promise<{ organization: string }>;
+}>) {
+  const { organization } = await params;
   const user = await getAuthUser();
-  const projects = await fetchProjects(user?.sub);
+  const org = await fetchOrganizationBySlug(organization);
+  const projects = await fetchProjects(user?.sub, org.id);
 
   const renderContent = () => {
     if (projects?.length === 0) {

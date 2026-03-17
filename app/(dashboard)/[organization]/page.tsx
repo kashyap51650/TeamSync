@@ -5,6 +5,7 @@ import { RecentProjects } from "@/components/dashboard/recent-projects";
 import { TaskStatusChart } from "@/components/dashboard/task-status-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuthUser } from "@/lib/auth";
+import { fetchOrganizationBySlug } from "@/services/organization";
 import { Suspense } from "react";
 
 function getGreeting(hour: number): string {
@@ -13,7 +14,14 @@ function getGreeting(hour: number): string {
   return "Good evening";
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params,
+}: Readonly<{
+  params: Promise<{ organization: string }>;
+}>) {
+  const { organization } = await params;
+  const currentOrg = await fetchOrganizationBySlug(organization);
+
   const user = await getAuthUser();
   const hour = new Date().getHours();
   const greeting = getGreeting(hour);
@@ -40,7 +48,7 @@ export default async function DashboardPage() {
           </div>
         }
       >
-        <DashboardStats />
+        <DashboardStats orgId={currentOrg.id} />
       </Suspense>
 
       {/* Charts Row */}

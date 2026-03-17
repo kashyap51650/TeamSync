@@ -26,10 +26,10 @@ import { getAuthUser } from "@/lib/auth";
 export default async function ProjectPage({
   params,
 }: Readonly<{
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; organization: string }>;
 }>) {
-  const { id } = await params;
-
+  const { id, organization } = await params;
+  console.log("Project ID from params:", await params);
   const project = await fetchProjectById(id);
   const user = await getAuthUser();
   const teamMembers = await fetchTeamMembers(user?.sub);
@@ -53,7 +53,7 @@ export default async function ProjectPage({
         <div className="grid grid-cols-8">
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground col-span-6">
             <Link
-              href="/projects"
+              href={`/${organization}/projects`}
               className="hover:text-foreground transition-colors"
             >
               Projects

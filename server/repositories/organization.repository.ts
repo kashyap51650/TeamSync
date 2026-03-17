@@ -30,6 +30,28 @@ export async function getOrganizationByUserId(userId: string) {
   });
 }
 
+export async function createOrganization(data: {
+  name: string;
+  slug: string;
+  logoUrl?: string;
+  createdById: string;
+}) {
+  return await prisma.organization.create({
+    data: {
+      name: data.name,
+      slug: data.slug,
+      logoUrl: data.logoUrl,
+      createdById: data.createdById,
+      members: {
+        create: {
+          userId: data.createdById,
+          role: "ADMIN",
+        },
+      },
+    },
+  });
+}
+
 export async function getFirstOrganizationByUserId(userId: string) {
   return await prisma.organization.findFirst({
     where: {
@@ -38,6 +60,23 @@ export async function getFirstOrganizationByUserId(userId: string) {
           userId: userId,
         },
       },
+    },
+  });
+}
+
+export async function getOrganizationBySlug(slug: string) {
+  console.log("Fetching organization by slug:", slug);
+  return await prisma.organization.findUnique({
+    where: {
+      slug: slug,
+    },
+  });
+}
+
+export async function getOrganizationById(id: string) {
+  return await prisma.organization.findUnique({
+    where: {
+      id: id,
     },
   });
 }

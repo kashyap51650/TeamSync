@@ -59,7 +59,7 @@ export function ProjectCard({ project }: Readonly<{ project: Project }>) {
         <div className="flex items-center justify-between text-[11px] text-muted-foreground">
           <span>Created {formatDate(project.createdAt)}</span>
           <Link
-            href={`/projects/${project.id}`}
+            href={`projects/${project.id}`}
             className="text-primary hover:underline"
           >
             View →

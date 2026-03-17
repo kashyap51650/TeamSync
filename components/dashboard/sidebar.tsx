@@ -1,7 +1,7 @@
 // src/components/dashboard/sidebar.tsx
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -11,12 +11,26 @@ import {
   Settings,
   Zap,
   ChevronRight,
+  ChevronsUpDown,
+  Check,
+  Plus,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth";
 import { Organization } from "@/types";
+import { useState } from "react";
+import { CreateOrganizationDialog } from "@/components/organization/create-organization-dialog";
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "", icon: LayoutDashboard },
@@ -36,7 +50,14 @@ export function Sidebar({
   const pathname = usePathname();
   const { user } = useAuthStore();
 
-  const slug = organizations[0]?.slug ?? "";
+  const router = useRouter();
+  const [createOrgOpen, setCreateOrgOpen] = useState(false);
+
+  const activeOrg =
+    organizations.find((org) => pathname.includes(org.slug)) ??
+    organizations[0];
+
+  const slug = activeOrg?.slug ?? "";
   const base = `/${slug}`;
 
   const buildHref = (path: string) => (path ? `${base}/${path}` : base);
@@ -67,24 +88,63 @@ export function Sidebar({
         </div>
       )}
 
-      {/* Organtionzation */}
+      {/* Organization Switcher */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex h-14 w-full items-center gap-2 border-b border-sidebar-border px-4 hover:bg-sidebar-accent transition-colors outline-none">
+            <Avatar className="h-7 w-7 shrink-0">
+              <AvatarImage src={activeOrg?.logoUrl ?? undefined} />
+              <AvatarFallback className="text-[11px] bg-primary text-primary-foreground">
+                {getInitials(activeOrg?.name ?? "")}
+              </AvatarFallback>
+            </Avatar>
+            <span className="flex-1 truncate text-left font-semibold text-sidebar-foreground tracking-tight">
+              {activeOrg?.name}
+            </span>
+            <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-sidebar-foreground/50" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="start" side="bottom">
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Organizations
+          </DropdownMenuLabel>
+          <DropdownMenuGroup>
+            {organizations.map((org) => (
+              <DropdownMenuItem
+                key={org.id}
+                onSelect={() => router.push(`/${org.slug}`)}
+                className="gap-2 cursor-pointer"
+              >
+                <Avatar className="h-5 w-5">
+                  <AvatarImage src={org.logoUrl ?? undefined} />
+                  <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
+                    {getInitials(org.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="flex-1 truncate">{org.name}</span>
+                {org.slug === activeOrg?.slug && (
+                  <Check className="h-3.5 w-3.5 text-primary" />
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={() => setCreateOrgOpen(true)}
+            className="gap-2 cursor-pointer"
+          >
+            <div className="flex h-5 w-5 items-center justify-center rounded border border-dashed border-muted-foreground/50">
+              <Plus className="h-3 w-3" />
+            </div>
+            <span>Create organization</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-          <Avatar className="h-7 w-7">
-            <AvatarImage src={organizations[0].logoUrl ?? undefined} />
-            <AvatarFallback className="text-[11px] bg-primary text-primary-foreground">
-              {getInitials(organizations[0].name)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <span className="font-semibold text-sidebar-foreground tracking-tight">
-          {organizations[0].name}
-        </span>
-        <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
-          Beta
-        </Badge>
-      </div>
+      <CreateOrganizationDialog
+        open={createOrgOpen}
+        onClose={() => setCreateOrgOpen(false)}
+      />
 
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-1 p-3">

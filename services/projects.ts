@@ -15,12 +15,11 @@ async function getOrgId(userId: string): Promise<string | null> {
   return membership?.organizationId ?? null;
 }
 
-export async function fetchProjects(userId?: string) {
+export async function fetchProjects(userId?: string, orgId?: string) {
   "use cache";
   cacheTag("projects-list");
   try {
     if (userId) {
-      const orgId = await getOrgId(userId);
       if (!orgId) {
         throw new Error("No organization found for user");
       }

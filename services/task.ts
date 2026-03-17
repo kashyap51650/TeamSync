@@ -1,19 +1,16 @@
-import { getOrgId } from "@/server/repositories/projects.repository";
 import {
   findTasksByProject,
   findTasksByUser,
 } from "@/server/repositories/tasks.repository";
 import { cacheTag } from "next/cache";
 
-export const fetchTasks = async (userId: string | undefined) => {
+export const fetchTasks = async (userId: string | undefined, orgId: string) => {
   "use cache";
   cacheTag("tasks-list");
   try {
     if (!userId) {
       throw new Error("User not authenticated");
     }
-
-    const orgId = await getOrgId(userId);
 
     if (!orgId) {
       throw new Error("Organization not found for user");
