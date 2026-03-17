@@ -1,9 +1,10 @@
-// src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthUser } from "./lib/auth";
+import { fetchFirstOrganizationByUser } from "./services/organization";
 
 const PUBLIC_PATHS = ["/login", "/register", "/api/auth"];
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow public paths
@@ -16,7 +17,23 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // For dashboard pages: auth check happens client-side in layout
+  const user = await getAuthUser(req);
+
+  if (!user) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("redirect", req.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (pathname === "/") {
+    const organization = await fetchFirstOrganizationByUser(user.sub);
+
+    if (organization) {
+      const dashboardUrl = new URL(`/${organization.slug}`, req.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+  }
+
   // This middleware just provides basic security headers
   const response = NextResponse.next();
 

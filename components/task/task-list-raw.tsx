@@ -10,7 +10,8 @@ import {
 } from "@/lib/utils";
 import { Task } from "@/types";
 import { TaskListAction } from "./task-list-action";
-import { fetchTeamMembers } from "@/services/user";
+// import { fetchTeamMembers } from "@/services/user";
+import { fetchMembersByProject } from "@/services/projects";
 
 export async function TaskListRow({
   task,
@@ -21,8 +22,13 @@ export async function TaskListRow({
   const statusConfig = TASK_STATUS_CONFIG[task.status];
   const overdue = isOverdue(task.dueDate);
 
-  const user = await getAuthUser();
-  const members = await fetchTeamMembers(user?.sub);
+  // const user = await getAuthUser();
+  const members = (await fetchMembersByProject(task.projectId)).map((user) => {
+    return {
+      id: user.user.id,
+      name: user.user.name,
+    };
+  });
 
   return (
     <div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50">

@@ -59,7 +59,7 @@ export function StatsCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden transition-all hover:shadow-md",
+        "relative overflow-hidden transition-all hover:shadow-md py-0",
         urgent && "border-red-200 dark:border-red-900/50",
       )}
     >

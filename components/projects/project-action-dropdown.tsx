@@ -17,10 +17,12 @@ import { TaskStatus, TeamMemberDropdownItem } from "@/types";
 import { Project } from "@prisma/client";
 
 export function ProjectActionDropdown({
+  userId,
   projectId,
   members,
   project,
 }: Readonly<{
+  userId: string | undefined;
   projectId: string;
   members: TeamMemberDropdownItem[];
   project: Project;
@@ -85,7 +87,7 @@ export function ProjectActionDropdown({
         open={addingMember}
         onClose={() => setAddingMember(false)}
         projectId={projectId}
-        users={members}
+        teamMembers={members}
       />
     </>
   );

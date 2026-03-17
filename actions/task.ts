@@ -64,6 +64,7 @@ export const updateTaskAction = async (
     dueDate: dueDate ? new Date(dueDate) : undefined,
   });
   updateTag("tasks-list-" + task.projectId);
+  updateTag("tasks-list");
   return task;
 };
 

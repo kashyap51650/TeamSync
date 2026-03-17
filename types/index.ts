@@ -58,7 +58,9 @@ export interface Organization {
   name: string;
   slug: string;
   logoUrl?: string | null;
-  createdAt: string;
+  createdById: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ─── Team Member ─────────────────────────────────────────────────────────────

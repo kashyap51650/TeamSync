@@ -16,61 +16,70 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth";
+import { Organization } from "@/types";
 
 const NAV_ITEMS = [
-  {
-    label: "Dashboard",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Projects",
-    href: "/projects",
-    icon: FolderKanban,
-  },
-  {
-    label: "Tasks",
-    href: "/tasks",
-    icon: CheckSquare,
-  },
-  {
-    label: "Analytics",
-    href: "/analytics",
-    icon: BarChart3,
-  },
-  {
-    label: "Team",
-    href: "/team",
-    icon: Users,
-  },
+  { label: "Dashboard", path: "", icon: LayoutDashboard },
+  { label: "Projects", path: "projects", icon: FolderKanban },
+  { label: "Tasks", path: "tasks", icon: CheckSquare },
+  { label: "Analytics", path: "analytics", icon: BarChart3 },
+  { label: "Team", path: "team", icon: Users },
 ];
 
 const BOTTOM_ITEMS = [
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
+  { label: "Settings", path: "settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+  organizations,
+}: Readonly<{ organizations: Organization[] }>) {
   const pathname = usePathname();
   const { user } = useAuthStore();
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
+  const slug = organizations[0]?.slug ?? "";
+  const base = `/${slug}`;
+
+  const buildHref = (path: string) => (path ? `${base}/${path}` : base);
+
+  const isActive = (path: string) => {
+    const href = buildHref(path);
+    if (!path) return pathname === base || pathname === `${base}/`;
     return pathname.startsWith(href);
   };
 
   return (
     <aside className="flex h-full w-60 flex-col border-r border-sidebar-border bg-sidebar">
       {/* Logo */}
+      {organizations.length === 0 && (
+        <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+            <Zap className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="font-semibold text-sidebar-foreground tracking-tight">
+            TeamSync
+          </span>
+          <Badge
+            variant="secondary"
+            className="ml-auto text-[10px] px-1.5 py-0"
+          >
+            Beta
+          </Badge>
+        </div>
+      )}
+
+      {/* Organtionzation */}
+
       <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-          <Zap className="h-4 w-4 text-primary-foreground" />
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={organizations[0].logoUrl ?? undefined} />
+            <AvatarFallback className="text-[11px] bg-primary text-primary-foreground">
+              {getInitials(organizations[0].name)}
+            </AvatarFallback>
+          </Avatar>
         </div>
         <span className="font-semibold text-sidebar-foreground tracking-tight">
-          TeamSync
+          {organizations[0].name}
         </span>
         <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
           Beta
@@ -86,11 +95,12 @@ export function Sidebar() {
         </div>
 
         {NAV_ITEMS.map((item) => {
-          const active = isActive(item.href);
+          const active = isActive(item.path);
+          const href = buildHref(item.path);
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={href}
+              href={href}
               className={cn(
                 "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
                 active
@@ -121,11 +131,14 @@ export function Sidebar() {
             </p>
           </div>
           {BOTTOM_ITEMS.map((item) => {
-            const active = isActive(item.href);
+            const href = item.href ?? buildHref(item.path);
+            const active = item.href
+              ? pathname.startsWith(item.href)
+              : isActive(item.path);
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
                 className={cn(
                   "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
                   active

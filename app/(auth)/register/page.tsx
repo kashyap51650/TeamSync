@@ -1,4 +1,3 @@
-// src/app/(auth)/register/page.tsx
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

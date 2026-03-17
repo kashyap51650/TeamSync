@@ -17,3 +17,27 @@ export async function getTeamMembers(OrganizationId: string) {
     },
   });
 }
+
+export async function getOrganizationByUserId(userId: string) {
+  return await prisma.organization.findMany({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+  });
+}
+
+export async function getFirstOrganizationByUserId(userId: string) {
+  return await prisma.organization.findFirst({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+  });
+}

@@ -1,9 +1,8 @@
 // src/components/dashboard/top-nav.tsx
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Bell, Search, LogOut, Moon, Sun, Monitor } from "lucide-react";
-import { useTheme } from "next-themes";
+import { logoutApi } from "@/actions/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,12 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { getInitials } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
-import { logoutApi } from "@/actions/auth";
+import { Bell, LogOut, Monitor, Moon, Search, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function TopNav() {
   const router = useRouter();
@@ -103,6 +103,9 @@ export function TopNav() {
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push("/settings")}>
+              Create new organization
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push("/settings")}>
               Settings
             </DropdownMenuItem>

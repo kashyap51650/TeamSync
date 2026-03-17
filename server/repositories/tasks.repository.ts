@@ -81,13 +81,6 @@ export async function createTask(data: {
     },
   });
 
-  prisma.projectMember.create({
-    data: {
-      projectId: data.projectId,
-      userId: data.assignedToId ?? data.createdById,
-    },
-  });
-
   return task;
 }
 

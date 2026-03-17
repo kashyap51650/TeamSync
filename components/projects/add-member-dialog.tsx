@@ -22,20 +22,20 @@ export function AddMemberDialog({
   open,
   onClose,
   projectId,
-  users,
+  teamMembers,
   existingMemberIds,
 }: Readonly<{
   open: boolean;
   onClose: () => void;
   projectId: string;
-  users: TeamMemberDropdownItem[];
+  teamMembers: TeamMemberDropdownItem[];
   existingMemberIds?: string[];
 }>) {
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const filtered = users.filter(
+  const filtered = teamMembers.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) &&
       !existingMemberIds?.includes(u.id),
@@ -72,7 +72,7 @@ export function AddMemberDialog({
     });
   };
 
-  const selectedUsers = users.filter((u) => selected.has(u.id));
+  const selectedUsers = teamMembers.filter((u) => selected.has(u.id));
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

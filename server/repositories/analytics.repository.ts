@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { subDays, startOfDay, format } from "date-fns";
+import { subDays, format } from "date-fns";
 
 export async function getOrgAnalytics(organizationId: string) {
   const [totalMembers, projects, tasks] = await Promise.all([
     prisma.teamMember.count({ where: { organizationId } }),
     prisma.project.findMany({
-      where: { organizationId },
+      where: { organizationId, members: { some: {} } },
       include: { _count: { select: { tasks: true } } },
     }),
     prisma.task.findMany({

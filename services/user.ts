@@ -27,7 +27,7 @@ export const fetchTeamMembers = async (userId: string | undefined) => {
     const teamMembers = await getTeamMembers(orgId);
     return teamMembers.map((member) => {
       return {
-        id: member.id,
+        id: member.user.id,
         name: member.user.name || "Unknown User",
       };
     });

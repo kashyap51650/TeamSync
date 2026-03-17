@@ -31,8 +31,6 @@ export default async function ProjectPage({
   const { id } = await params;
 
   const project = await fetchProjectById(id);
-
-  const members = await fetchUsers();
   const user = await getAuthUser();
   const teamMembers = await fetchTeamMembers(user?.sub);
 
@@ -67,6 +65,7 @@ export default async function ProjectPage({
           </div>
           <div className="col-span-2 flex shrink-0 items-center justify-end gap-2">
             <ProjectActionDropdown
+              userId={user?.sub}
               projectId={id}
               members={teamMembers}
               project={project}
