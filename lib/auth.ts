@@ -2,15 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/server/services/auth.service";
 import type { JWTPayload } from "@/types";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export async function getAuthUser(
   req?: NextRequest,
 ): Promise<JWTPayload | null> {
-  // const authHeader = req.headers.get("authorization");
-  // const headerToken = authHeader?.startsWith("Bearer ")
-  //   ? authHeader.slice(7)
-  //   : null;
   let token: string | undefined;
   if (req) {
     const cookieToken = req.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
@@ -92,4 +88,11 @@ export function clearRefreshTokenCookie(response: NextResponse): void {
     maxAge: 0,
     path: "/",
   });
+}
+
+export async function getAuthUserId() {
+  const header = await headers();
+  const userId = header.get("x-user-id");
+
+  return userId;
 }

@@ -4,7 +4,7 @@ import {
   getOrganizationByUserId,
 } from "@/server/repositories/organization.repository";
 
-export const fetchOrganizationByUser = async (userId: string | undefined) => {
+export const fetchOrganizationByUser = async (userId: string | null) => {
   "use cache";
   try {
     if (!userId) {

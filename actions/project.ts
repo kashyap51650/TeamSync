@@ -57,6 +57,7 @@ export const createProjectAction = async (data: {
   });
 
   updateTag("projects-list");
+  updateTag("analytics-overview");
   return project;
 };
 

@@ -1,7 +1,10 @@
 "use server";
 
 import { getAuthUser } from "@/lib/auth";
-import { createOrganization } from "@/server/repositories/organization.repository";
+import {
+  addMemberToOrganization,
+  createOrganization,
+} from "@/server/repositories/organization.repository";
 import { revalidatePath } from "next/cache";
 
 export const createOrganizationAction = async (data: {
@@ -24,4 +27,22 @@ export const createOrganizationAction = async (data: {
 
   revalidatePath("/");
   return org;
+};
+
+export const addMemberToOrganizationAction = async (data: {
+  organizationId: string;
+  email: string;
+  role: "ADMIN" | "MANAGER" | "MEMBER";
+}) => {
+  const user = await getAuthUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  await addMemberToOrganization({
+    organizationId: data.organizationId,
+    email: data.email,
+    role: data.role,
+  });
 };

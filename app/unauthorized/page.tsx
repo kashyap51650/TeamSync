@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Unauthorized() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
+    <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 text-slate-900">
       <section className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-6 py-12">
         <div className="w-full rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-xl backdrop-blur sm:p-10">
           <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">

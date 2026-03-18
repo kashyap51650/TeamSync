@@ -38,6 +38,7 @@ export async function proxy(req: NextRequest) {
   // This middleware just provides basic security headers
   const response = NextResponse.next();
 
+  response.headers.set("x-user-id", user.sub);
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");

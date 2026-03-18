@@ -1,7 +1,8 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { TopNav } from "@/components/dashboard/top-nav";
-import { getAuthUser } from "@/lib/auth";
+import { getAuthUserId } from "@/lib/auth";
 import { fetchOrganizationByUser } from "@/services/organization";
+import { Suspense } from "react";
 
 export default async function DashboardLayout({
   children,
@@ -11,12 +12,14 @@ export default async function DashboardLayout({
   // Initialize SSE for real-time updates
   // useSSE();
 
-  const user = await getAuthUser()!;
-  const organizations = await fetchOrganizationByUser(user?.sub);
+  const userId = await getAuthUserId()!;
+  const organizations = await fetchOrganizationByUser(userId);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar organizations={organizations} />
+      <Suspense fallback={<div className="flex-1 p-6">Loading...</div>}>
+        <Sidebar organizations={organizations} />
+      </Suspense>
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopNav />
         <main className="flex-1 overflow-y-auto">

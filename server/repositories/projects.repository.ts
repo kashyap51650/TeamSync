@@ -71,13 +71,22 @@ export async function createProject(data: {
   endDate?: Date;
   color?: string;
 }) {
-  return prisma.project.create({
+  const newProject = await prisma.project.create({
     data,
     include: {
       createdBy: { select: { id: true, name: true, avatarUrl: true } },
       _count: { select: { tasks: true, members: true } },
     },
   });
+
+  await prisma.projectMember.create({
+    data: {
+      projectId: newProject.id,
+      userId: data.createdById,
+    },
+  });
+
+  return newProject;
 }
 
 export async function updateProject(

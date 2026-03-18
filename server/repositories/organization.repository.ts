@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function getTeamMembers(OrganizationId: string) {
   return await prisma.teamMember.findMany({
@@ -119,4 +120,31 @@ export async function checkUserisOrganizationAdmin(
   });
 
   return !!organization?.members.length;
+}
+
+export async function addMemberToOrganization(data: {
+  organizationId: string;
+  email: string;
+  role: "ADMIN" | "MANAGER" | "MEMBER";
+}) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: data.email,
+    },
+  });
+
+  if (!user) {
+    throw new PrismaClientKnownRequestError("User not found", {
+      code: "P2025",
+      clientVersion: "",
+    });
+  }
+
+  await prisma.teamMember.create({
+    data: {
+      organizationId: data.organizationId,
+      userId: user.id,
+      role: data.role,
+    },
+  });
 }

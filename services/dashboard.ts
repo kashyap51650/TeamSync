@@ -19,7 +19,8 @@ export const fetchOrganizationAnalytics = async (
       throw new Error("Organization not found for user");
     }
 
-    const stats = await getOrgAnalytics(orgId);
+    const stats = await getOrgAnalytics(orgId, userId);
+    console.log("Fetched analytics stats:", stats);
     return stats;
   } catch (error) {
     console.error("Error fetching analytics", error);

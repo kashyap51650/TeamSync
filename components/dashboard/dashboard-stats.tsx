@@ -33,7 +33,7 @@ export async function DashboardStats({
         label="Total Projects"
         value={stats?.totalProjects ?? 0}
         icon={FolderKanban}
-        description="Active workspaces"
+        description="Assigned to you"
         trend={{ value: 12, label: "vs last month" }}
         color="blue"
       />
