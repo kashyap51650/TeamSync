@@ -91,6 +91,8 @@ export interface Project {
   color: string;
   createdAt: Date;
   updatedAt: Date;
+  members?: (Pick<TeamMember, "id" | "userId"> & { projectId: string })[];
+  createdBy?: Pick<User, "id" | "name" | "avatarUrl">;
   _count?: {
     tasks: number;
     members: number;

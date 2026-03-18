@@ -5,7 +5,10 @@ import { RecentProjects } from "@/components/dashboard/recent-projects";
 import { TaskStatusChart } from "@/components/dashboard/task-status-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuthUser } from "@/lib/auth";
+import { fetchProductivityOverTime } from "@/services/dashboard";
 import { fetchOrganizationBySlug } from "@/services/organization";
+import { fetchProjects } from "@/services/projects";
+import { fetchTasks } from "@/services/task";
 import { Suspense } from "react";
 
 function getGreeting(hour: number): string {
@@ -19,10 +22,14 @@ export default async function DashboardPage({
 }: Readonly<{
   params: Promise<{ organization: string }>;
 }>) {
+  const user = await getAuthUser();
   const { organization } = await params;
   const currentOrg = await fetchOrganizationBySlug(organization);
 
-  const user = await getAuthUser();
+  const productivityData = fetchProductivityOverTime(currentOrg.id, 14);
+  const projects = fetchProjects(user?.sub, currentOrg.id);
+  const tasks = fetchTasks(user?.sub, currentOrg.id);
+
   const hour = new Date().getHours();
   const greeting = getGreeting(hour);
 
@@ -54,17 +61,37 @@ export default async function DashboardPage({
       {/* Charts Row */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ProductivityChart />
+          <Suspense fallback={<Skeleton className="h-56 w-full" />}>
+            <ProductivityChart data={productivityData} />
+          </Suspense>
         </div>
-        <TaskStatusChart />
+        <TaskStatusChart data={tasks} />
       </div>
 
       {/* Bottom Row */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <RecentProjects />
+          <Suspense
+            fallback={[new Array(4)].map((_, i) => (
+              <Skeleton key={i + 1} className="h-16 rounded-lg" />
+            ))}
+          >
+            <RecentProjects projects={projects} />
+          </Suspense>
         </div>
-        <ActivityFeed />
+        <Suspense
+          fallback={new Array(5).map((_, i) => (
+            <div key={i + 1} className="flex items-start gap-3">
+              <Skeleton className="h-7 w-7 rounded-full shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <Skeleton className="h-3.5 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        >
+          <ActivityFeed data={tasks} />
+        </Suspense>
       </div>
     </div>
   );

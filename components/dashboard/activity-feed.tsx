@@ -1,17 +1,15 @@
-// src/components/dashboard/activity-feed.tsx
 "use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { formatRelative, getInitials, TASK_STATUS_CONFIG } from "@/lib/utils";
 import type { Task } from "@/types";
-import { useMyTasks } from "@/hooks/use-tasks";
+import { use } from "react";
 
 function ActivityItem({ task }: Readonly<{ task: Task }>) {
   const statusConfig = TASK_STATUS_CONFIG[task.status];
@@ -54,8 +52,8 @@ function ActivityItem({ task }: Readonly<{ task: Task }>) {
   );
 }
 
-export function ActivityFeed() {
-  const { data: tasks, isLoading } = useMyTasks();
+export function ActivityFeed({ data }: Readonly<{ data: Promise<Task[]> }>) {
+  const tasks = use(data);
   const recent = [...(tasks ?? [])]
     .sort(
       (a, b) =>
@@ -70,17 +68,7 @@ export function ActivityFeed() {
         <CardDescription>Your latest task updates</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isLoading ? (
-          [...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <Skeleton className="h-7 w-7 rounded-full shrink-0" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-3.5 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-            </div>
-          ))
-        ) : recent.length === 0 ? (
+        {recent.length === 0 ? (
           <p className="py-4 text-center text-sm text-muted-foreground">
             No recent activity
           </p>

@@ -1,15 +1,14 @@
-// src/components/dashboard/task-status-chart.tsx
 "use client";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useMyTasks } from "@/hooks/use-tasks";
+import { Task } from "@/types";
+import { use } from "react";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const STATUS_COLORS: Record<string, string> = {
   BACKLOG: "#94a3b8",
@@ -29,21 +28,8 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELLED: "Cancelled",
 };
 
-export function TaskStatusChart() {
-  const { data: tasks, isLoading } = useMyTasks();
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Task Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-56 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+export function TaskStatusChart({ data }: Readonly<{ data: Promise<Task[]> }>) {
+  const tasks = use(data);
 
   const statusMap: Record<string, number> = {};
   tasks?.forEach((t) => {

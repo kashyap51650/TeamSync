@@ -25,6 +25,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Redirect root to first organization dashboard
   if (pathname === "/") {
     const organization = await fetchFirstOrganizationByUser(user.sub);
 

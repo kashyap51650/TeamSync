@@ -1,26 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { format, parseISO } from "date-fns";
-import { apiClient } from "@/lib/api-client";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { DailyProductivity } from "@/types";
+import { format, parseISO } from "date-fns";
+import { use } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
@@ -43,16 +41,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export function ProductivityChart() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["analytics", "productivity"],
-    queryFn: () =>
-      apiClient
-        .get<{
-          data: DailyProductivity[];
-        }>("/api/analytics?type=productivity&days=14")
-        .then((r) => r.data ?? []),
-  });
+export function ProductivityChart({
+  data,
+}: Readonly<{ data: Promise<DailyProductivity[]> }>) {
+  const productivityData = use(data);
 
   return (
     <Card>
@@ -63,62 +55,58 @@ export function ProductivityChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-56 w-full" />
-        ) : (
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart
-              data={data}
-              margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="created" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="completed" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
-                vertical={false}
-              />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                tickFormatter={(v) => format(parseISO(v), "MMM d")}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                allowDecimals={false}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey="created"
-                stroke="#6366f1"
-                strokeWidth={2}
-                fill="url(#created)"
-                name="created"
-              />
-              <Area
-                type="monotone"
-                dataKey="completed"
-                stroke="#10b981"
-                strokeWidth={2}
-                fill="url(#completed)"
-                name="completed"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        )}
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart
+            data={productivityData}
+            margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="created" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="completed" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="hsl(var(--border))"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+              tickFormatter={(v) => format(parseISO(v), "MMM d")}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+              allowDecimals={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area
+              type="monotone"
+              dataKey="created"
+              stroke="#6366f1"
+              strokeWidth={2}
+              fill="url(#created)"
+              name="created"
+            />
+            <Area
+              type="monotone"
+              dataKey="completed"
+              stroke="#10b981"
+              strokeWidth={2}
+              fill="url(#completed)"
+              name="completed"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );

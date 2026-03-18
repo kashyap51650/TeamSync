@@ -19,23 +19,25 @@ export async function fetchProjects(userId?: string, orgId?: string) {
   "use cache";
   cacheTag("projects-list");
   try {
-    if (userId) {
-      if (!orgId) {
-        throw new Error("No organization found for user");
-      }
-      const projects = await findProjectsByOrg(orgId);
-
-      // Filter projects to include only those where the user is a member or creator
-      const filteredProjects = projects.filter((project) => {
-        const isMember = project.members.some(
-          (member) => member.userId === userId,
-        );
-        const isCreator = project.createdById === userId;
-        return isMember || isCreator;
-      });
-
-      return filteredProjects;
+    if (!userId) {
+      throw new Error("User not authenticated");
     }
+
+    if (!orgId) {
+      throw new Error("No organization found for user");
+    }
+    const projects = await findProjectsByOrg(orgId);
+
+    // Filter projects to include only those where the user is a member or creator
+    const filteredProjects = projects.filter((project) => {
+      const isMember = project.members.some(
+        (member) => member.userId === userId,
+      );
+      const isCreator = project.createdById === userId;
+      return isMember || isCreator;
+    });
+
+    return filteredProjects;
   } catch (error) {
     console.error("Error fetching projects", error);
     throw error;

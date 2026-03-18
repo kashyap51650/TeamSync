@@ -1,6 +1,6 @@
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
   label: string;
@@ -50,10 +50,9 @@ export function StatsCard({
   value,
   icon: Icon,
   description,
-  trend,
   color = "indigo",
   urgent,
-}: StatsCardProps) {
+}: Readonly<StatsCardProps>) {
   const colors = colorMap[color];
 
   return (
@@ -73,27 +72,6 @@ export function StatsCard({
               <p className="mt-1 text-xs text-muted-foreground">
                 {description}
               </p>
-            )}
-            {trend && (
-              <div className="mt-2 flex items-center gap-1 text-xs">
-                {trend.value >= 0 ? (
-                  <TrendingUp className="h-3 w-3 text-emerald-500" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-500" />
-                )}
-                <span
-                  className={cn(
-                    "font-medium",
-                    trend.value >= 0
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-red-600 dark:text-red-400",
-                  )}
-                >
-                  {trend.value >= 0 ? "+" : ""}
-                  {trend.value}%
-                </span>
-                <span className="text-muted-foreground">{trend.label}</span>
-              </div>
             )}
           </div>
           <div className={cn("rounded-lg p-2.5", colors.iconBg)}>

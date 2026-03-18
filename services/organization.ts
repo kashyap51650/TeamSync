@@ -3,7 +3,6 @@ import {
   getOrganizationBySlug,
   getOrganizationByUserId,
 } from "@/server/repositories/organization.repository";
-import { cacheLife } from "next/cache";
 
 export const fetchOrganizationByUser = async (userId: string | undefined) => {
   "use cache";

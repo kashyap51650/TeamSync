@@ -65,7 +65,6 @@ export async function getFirstOrganizationByUserId(userId: string) {
 }
 
 export async function getOrganizationBySlug(slug: string) {
-  console.log("Fetching organization by slug:", slug);
   return await prisma.organization.findUnique({
     where: {
       slug: slug,
@@ -79,4 +78,45 @@ export async function getOrganizationById(id: string) {
       id: id,
     },
   });
+}
+
+export async function checkUserisOrganizationMember(
+  userId: string,
+  organizationSlug: string,
+) {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      slug: organizationSlug,
+    },
+    include: {
+      members: {
+        where: {
+          userId: userId,
+        },
+      },
+    },
+  });
+
+  return !!organization?.members.length;
+}
+
+export async function checkUserisOrganizationAdmin(
+  userId: string,
+  organizationSlug: string,
+) {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      slug: organizationSlug,
+    },
+    include: {
+      members: {
+        where: {
+          userId: userId,
+          role: "ADMIN",
+        },
+      },
+    },
+  });
+
+  return !!organization?.members.length;
 }

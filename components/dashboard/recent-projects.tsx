@@ -1,21 +1,19 @@
-// src/components/dashboard/recent-projects.tsx
 "use client";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, FolderKanban } from "lucide-react";
 import { PROJECT_STATUS_CONFIG } from "@/lib/utils";
 import type { Project } from "@/types";
-import { useProjects } from "@/hooks/use-project";
+import { ArrowRight, FolderKanban } from "lucide-react";
+import Link from "next/link";
+import { use } from "react";
 
 function ProjectRow({ project }: Readonly<{ project: Project }>) {
   const config = PROJECT_STATUS_CONFIG[project.status];
@@ -58,9 +56,11 @@ function ProjectRow({ project }: Readonly<{ project: Project }>) {
   );
 }
 
-export function RecentProjects() {
-  const { data: projects, isLoading } = useProjects();
-  const recent = projects?.slice(0, 5) ?? [];
+export function RecentProjects({
+  projects,
+}: Readonly<{ projects: Promise<Project[]> }>) {
+  const projectlist = use(projects);
+  const recent = projectlist?.slice(0, 5) ?? [];
 
   return (
     <Card>
@@ -70,22 +70,18 @@ export function RecentProjects() {
           <CardDescription>Your latest active projects</CardDescription>
         </div>
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/projects">
+          <Link href="projects">
             View all <ArrowRight className="ml-1 h-3.5 w-3.5" />
           </Link>
         </Button>
       </CardHeader>
       <CardContent className="space-y-1 pt-0">
-        {isLoading ? (
-          [...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-16 rounded-lg" />
-          ))
-        ) : recent.length === 0 ? (
+        {recent.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <FolderKanban className="h-8 w-8 text-muted-foreground/30 mb-2" />
             <p className="text-sm text-muted-foreground">No projects yet</p>
             <Button variant="link" size="sm" asChild className="mt-1">
-              <Link href="/projects">Create your first project →</Link>
+              <Link href="projects">Create your first project →</Link>
             </Button>
           </div>
         ) : (
