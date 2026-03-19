@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken } from "@/server/services/auth.service";
 import type { JWTPayload } from "@/types";
 import { cookies, headers } from "next/headers";
+import bcrypt from "bcrypt";
 
 export async function getAuthUser(
   req?: NextRequest,
@@ -95,4 +96,20 @@ export async function getAuthUserId() {
   const userId = header.get("x-user-id");
 
   return userId;
+}
+
+export async function getCurrentUser(): Promise<JWTPayload | null> {
+  const user = await getAuthUser();
+  return user;
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
+
+export async function comparePassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
+  return bcrypt.compare(password, hash);
 }

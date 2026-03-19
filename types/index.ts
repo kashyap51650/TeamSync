@@ -61,6 +61,7 @@ export interface Organization {
   createdById: string;
   createdAt: Date;
   updatedAt: Date;
+  projects: Pick<Project, "id" | "name">[];
 }
 
 // ─── Team Member ─────────────────────────────────────────────────────────────

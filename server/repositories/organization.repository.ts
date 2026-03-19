@@ -28,6 +28,14 @@ export async function getOrganizationByUserId(userId: string) {
         },
       },
     },
+    include: {
+      projects: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 }
 

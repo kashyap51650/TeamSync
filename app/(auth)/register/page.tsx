@@ -41,14 +41,14 @@ export default function RegisterPage() {
       setAuth(result.user, result.accessToken);
 
       // Create org for user via API
-      await fetch("/api/org", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${result.accessToken}`,
-        },
-        body: JSON.stringify({ name: orgName }),
-      });
+      // await fetch("/api/org", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${result.accessToken}`,
+      //   },
+      //   body: JSON.stringify({ name: orgName }),
+      // });
 
       router.replace("/");
     } catch (err) {

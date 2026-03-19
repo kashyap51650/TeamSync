@@ -1,22 +1,6 @@
-// src/components/dashboard/sidebar.tsx
 "use client";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  FolderKanban,
-  CheckSquare,
-  BarChart3,
-  Users,
-  Settings,
-  Zap,
-  ChevronRight,
-  ChevronsUpDown,
-  Check,
-  Plus,
-} from "lucide-react";
+import { CreateOrganizationDialog } from "@/components/organization/create-organization-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -27,10 +11,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore } from "@/store/auth";
+import { cn, getInitials } from "@/lib/utils";
 import { Organization } from "@/types";
+import {
+  BarChart3,
+  Check,
+  CheckSquare,
+  ChevronRight,
+  ChevronsUpDown,
+  FolderKanban,
+  LayoutDashboard,
+  Plus,
+  Settings,
+  Users,
+  Zap,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { CreateOrganizationDialog } from "@/components/organization/create-organization-dialog";
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "", icon: LayoutDashboard },
@@ -48,7 +46,6 @@ export function Sidebar({
   organizations,
 }: Readonly<{ organizations: Organization[] }>) {
   const pathname = usePathname();
-  const { user } = useAuthStore();
 
   const router = useRouter();
   const [createOrgOpen, setCreateOrgOpen] = useState(false);
@@ -65,7 +62,7 @@ export function Sidebar({
   const isActive = (path: string) => {
     const href = buildHref(path);
     if (!path) return pathname === base || pathname === `${base}/`;
-    return pathname.startsWith(href);
+    return pathname === href;
   };
 
   return (
@@ -184,6 +181,41 @@ export function Sidebar({
           );
         })}
 
+        <div className="mb-1">
+          <p className="px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/40">
+            Recent Projects
+          </p>
+        </div>
+
+        {activeOrg?.projects.map((project) => {
+          const active = pathname.includes(project.id);
+          return (
+            <Link
+              key={project.id}
+              href={`/${activeOrg.slug}/projects/${project.id}`}
+              className={cn(
+                "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
+                active
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              )}
+            >
+              <FolderKanban
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-colors",
+                  active
+                    ? "text-sidebar-primary-foreground"
+                    : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
+                )}
+              />
+              {project.name}
+              {active && (
+                <ChevronRight className="ml-auto h-3 w-3 opacity-50" />
+              )}
+            </Link>
+          );
+        })}
+
         <div className="mt-auto">
           <div className="mb-1 mt-4">
             <p className="px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/40">
@@ -213,28 +245,6 @@ export function Sidebar({
           })}
         </div>
       </nav>
-
-      {/* User Footer */}
-      {user && (
-        <div className="border-t border-sidebar-border p-3">
-          <div className="flex items-center gap-2.5 rounded-md px-2 py-1.5">
-            <Avatar className="h-7 w-7">
-              <AvatarImage src={user.avatarUrl ?? undefined} />
-              <AvatarFallback className="text-[11px] bg-primary text-primary-foreground">
-                {getInitials(user.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium text-sidebar-foreground leading-none">
-                {user.name}
-              </p>
-              <p className="truncate text-[11px] text-sidebar-foreground/50 mt-0.5">
-                {user.email}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </aside>
   );
 }

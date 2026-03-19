@@ -1,4 +1,3 @@
-// src/components/dashboard/top-nav.tsx
 "use client";
 import { logoutApi } from "@/actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -102,13 +101,6 @@ export function TopNav() {
               <p className="text-sm font-medium">{user?.name}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/settings")}>
-              Create new organization
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push("/settings")}>
-              Settings
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
