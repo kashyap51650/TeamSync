@@ -1,9 +1,12 @@
 import {
-  AppearanceSettings,
   NotificationSettings,
   ProfileSettings,
   SecuritySettings,
 } from "@/components/settings";
+import {
+  Icon as AppearanceIcon,
+  ToggleRow as AppearanceToggleRow,
+} from "@/components/settings/appearance-settings";
 import {
   Card,
   CardContent,
@@ -39,7 +42,20 @@ export default async function SettingsPage() {
           </Suspense>
         </CardContent>
       </Card>
-      <AppearanceSettings />
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <AppearanceIcon />
+            Appearance
+          </CardTitle>
+          <CardDescription>
+            Customize how TeamSync looks for you
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <AppearanceToggleRow />
+        </CardContent>
+      </Card>
       <NotificationSettings />
       <SecuritySettings />
     </div>

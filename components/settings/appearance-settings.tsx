@@ -1,49 +1,40 @@
 "use client";
+
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
-export function AppearanceSettings() {
-  const { theme, setTheme } = useTheme();
+function useThemeState() {
+  const { resolvedTheme, setTheme } = useTheme();
 
-  const handleThemeChange = (checked: boolean) => {
-    setTheme(checked ? "dark" : "light");
-  };
+  const ready = resolvedTheme !== undefined;
+  const isDark = resolvedTheme === "dark";
+  const onChange = (checked: boolean) => setTheme(checked ? "dark" : "light");
+
+  return { ready, isDark, onChange };
+}
+
+export function Icon() {
+  const { ready, isDark } = useThemeState();
+
+  if (!ready) return <Sun className="h-4 w-4 opacity-0" aria-hidden="true" />;
+  return isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
+}
+
+export function ToggleRow() {
+  const { ready, isDark, onChange } = useThemeState();
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          {theme === "dark" ? (
-            <Moon className="h-4 w-4" />
-          ) : (
-            <Sun className="h-4 w-4" />
-          )}
-          Appearance
-        </CardTitle>
-        <CardDescription>Customize how TeamSync looks for you</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Dark mode</p>
-            <p className="text-xs text-muted-foreground">
-              Switch between light and dark themes
-            </p>
-          </div>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={handleThemeChange}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium">Dark mode</p>
+        <p className="text-xs text-muted-foreground">
+          Switch between light and dark themes
+        </p>
+      </div>
+      <Switch checked={isDark} onCheckedChange={onChange} disabled={!ready} />
+    </div>
   );
 }
+
+export const AppearanceThemeControls = { Icon, ToggleRow };
