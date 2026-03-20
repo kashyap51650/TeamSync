@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/store/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -23,7 +22,6 @@ type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -36,8 +34,7 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setServerError("");
     try {
-      const result = await loginAction(data);
-      setAuth(result.user, result.accessToken);
+      await loginAction(data);
       router.replace("/");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Login failed");

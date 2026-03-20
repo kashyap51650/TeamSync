@@ -1,25 +1,17 @@
 // src/app/(auth)/layout.tsx
-"use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Zap } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
+import { getAuthUser } from "@/lib/auth";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const { user, isLoading } = useAuthStore();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      router.replace("/");
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading) return null;
+  const user = await getAuthUser();
+  if (user) {
+    redirect("/");
+  }
 
   return (
     <div className="min-h-screen dot-grid bg-background flex flex-col">

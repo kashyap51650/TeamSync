@@ -2,30 +2,40 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { getAuthUserId } from "@/lib/auth";
 import { fetchOrganizationByUser } from "@/services/organization";
+import { fetchUserDetails } from "@/services/user";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export default async function DashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  // Initialize SSE for real-time updates
-  // useSSE();
+async function DashboardContent({ children }: { children: React.ReactNode }) {
+  const userId = await getAuthUserId();
+  if (!userId) redirect("/login");
 
-  const userId = await getAuthUserId()!;
-  const organizations = await fetchOrganizationByUser(userId);
+  const [organizations, user] = await Promise.all([
+    fetchOrganizationByUser(userId),
+    fetchUserDetails(userId),
+  ]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Suspense fallback={<div className="flex-1 p-6">Loading...</div>}>
-        <Sidebar organizations={organizations} />
-      </Suspense>
+      <Sidebar organizations={organizations} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <TopNav />
+        <TopNav user={user} />
         <main className="flex-1 overflow-y-auto">
           <div className="p-6">{children}</div>
         </main>
       </div>
     </div>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <Suspense>
+      <DashboardContent>{children}</DashboardContent>
+    </Suspense>
   );
 }

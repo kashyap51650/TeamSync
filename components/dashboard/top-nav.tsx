@@ -12,21 +12,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { getInitials } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth";
 import { Bell, LogOut, Monitor, Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function TopNav() {
+interface TopNavUser {
+  name: string;
+  email: string;
+  avatarUrl?: string | null;
+}
+
+export function TopNav({ user }: Readonly<{ user: TopNavUser | null }>) {
   const router = useRouter();
-  const { user, clearAuth } = useAuthStore();
   const { theme, setTheme } = useTheme();
   const [notifCount] = useState(3);
 
   const handleLogout = async () => {
     await logoutAction();
-    clearAuth();
     router.replace("/login");
   };
 
