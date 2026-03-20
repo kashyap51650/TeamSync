@@ -19,9 +19,10 @@ import { ProjectAnalyticsTab } from "@/components/projects/project-analytics-tab
 import { ProjectMemberCard } from "@/components/projects/project-members";
 import { ProjectTasksTab } from "@/components/projects/project-tasks";
 import { fetchProjectById } from "@/services/projects";
-import { fetchTeamMembers, fetchUsers } from "@/services/user";
 import { Suspense } from "react";
 import { getAuthUser } from "@/lib/auth";
+import { fetchOrganizationBySlug } from "@/services/organization";
+import { fetchOrganizationTeamMembers } from "@/services/team";
 
 export default async function ProjectPage({
   params,
@@ -32,7 +33,16 @@ export default async function ProjectPage({
   console.log("Project ID from params:", await params);
   const project = await fetchProjectById(id);
   const user = await getAuthUser();
-  const teamMembers = await fetchTeamMembers(user?.sub);
+  const currentOrg = await fetchOrganizationBySlug(organization);
+
+  const teamMembersData = await fetchOrganizationTeamMembers(currentOrg.id);
+
+  const teamMembers = teamMembersData.map((val) => {
+    return {
+      id: val.id,
+      name: val.user.name,
+    };
+  });
 
   if (!project) {
     return (

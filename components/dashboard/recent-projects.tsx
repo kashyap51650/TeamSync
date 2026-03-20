@@ -13,6 +13,7 @@ import { PROJECT_STATUS_CONFIG } from "@/lib/utils";
 import type { Project } from "@/types";
 import { ArrowRight, FolderKanban } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { use } from "react";
 
 function ProjectRow({ project }: Readonly<{ project: Project }>) {
@@ -21,10 +22,11 @@ function ProjectRow({ project }: Readonly<{ project: Project }>) {
   // Fake completion % for demo
   // eslint-disable-next-line react-hooks/purity
   const progress = total > 0 ? Math.floor(Math.random() * 80 + 10) : 0;
+  const params = useParams();
 
   return (
     <Link
-      href={`/projects/${project.id}`}
+      href={`${params.organization}/projects/${project.id}`}
       className="group flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-muted/50"
     >
       <div
