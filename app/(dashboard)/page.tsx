@@ -1,11 +1,37 @@
+"use client";
+import { useAuthStore } from "@/store/auth";
+import { CreateOrganizationDialog } from "@/components/organization/create-organization-dialog";
+import { Button } from "@/components/ui/button";
+import { FolderKanban, Plus } from "lucide-react";
+import { useState } from "react";
+
 export default function Home() {
+  const { user } = useAuthStore();
+  const [createOrgOpen, setCreateOrgOpen] = useState(false);
+
   return (
     <div className="flex h-screen items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-3">
-        <h1 className="text-2xl font-bold">Welcome to your dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Select a workspace from the sidebar to get started.
-        </p>
+      <div className="flex flex-col items-center gap-6 text-center max-w-md">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <FolderKanban className="h-8 w-8 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold mb-2">
+            Welcome to TeamSync{user?.name ? `, ${user.name}` : ""}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Create your first organization to start managing projects, tasks,
+            and your team.
+          </p>
+          <Button onClick={() => setCreateOrgOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Create Organization
+          </Button>
+        </div>
+        <CreateOrganizationDialog
+          open={createOrgOpen}
+          onClose={() => setCreateOrgOpen(false)}
+        />
       </div>
     </div>
   );

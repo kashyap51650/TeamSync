@@ -1,5 +1,5 @@
 "use client";
-import { logoutApi } from "@/actions/auth";
+import { logoutAction } from "@/actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export function TopNav() {
   const [notifCount] = useState(3);
 
   const handleLogout = async () => {
-    await logoutApi();
+    await logoutAction();
     clearAuth();
     router.replace("/login");
   };

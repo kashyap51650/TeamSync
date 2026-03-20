@@ -11,13 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
-import { registerApi } from "@/actions/auth";
+import { registerAction } from "@/actions/auth";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Enter a valid email"),
+  email: z.email("Enter a valid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  orgName: z.string().min(2, "Organization name is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -34,10 +33,10 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const onSubmit = async ({ name, email, password, orgName }: FormData) => {
+  const onSubmit = async ({ name, email, password }: FormData) => {
     setServerError("");
     try {
-      const result = await registerApi({ name, email, password });
+      const result = await registerAction({ name, email, password });
       setAuth(result.user, result.accessToken);
 
       // Create org for user via API
@@ -89,20 +88,6 @@ export default function RegisterPage() {
               {errors.name && (
                 <p className="text-xs text-destructive">
                   {errors.name.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="orgName">Organization Name</Label>
-              <Input
-                id="orgName"
-                placeholder="Acme Corp"
-                {...register("orgName")}
-              />
-              {errors.orgName && (
-                <p className="text-xs text-destructive">
-                  {errors.orgName.message}
                 </p>
               )}
             </div>

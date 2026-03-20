@@ -1,6 +1,6 @@
 // src/app/(auth)/login/page.tsx
 "use client";
-import { loginApi } from "@/actions/auth";
+import { loginAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setServerError("");
     try {
-      const result = await loginApi(data);
+      const result = await loginAction(data);
       setAuth(result.user, result.accessToken);
       router.replace("/");
     } catch (err) {

@@ -1,20 +1,32 @@
 "use client";
-import { refreshApi } from "@/actions/auth";
+import { refreshAction } from "@/actions/auth";
 import { useAuthStore } from "@/store/auth";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export function AuthProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { setAuth, clearAuth, setLoading } = useAuthStore();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Skip refresh on auth pages
+    if (pathname === "/login" || pathname === "/register") {
+      setLoading(false);
+      return;
+    }
+
     const bootstrap = async () => {
       setLoading(true);
-      const result = await refreshApi();
-      if (result) {
-        setAuth(result.user, result.accessToken);
-      } else {
+      try {
+        const result = await refreshAction();
+        if (result) {
+          setAuth(result.user, result.accessToken);
+        } else {
+          clearAuth();
+        }
+      } catch {
         clearAuth();
       }
     };
@@ -24,10 +36,14 @@ export function AuthProvider({
     // Refresh access token every 12 minutes
     const interval = setInterval(
       async () => {
-        const result = await refreshApi();
-        if (result) {
-          setAuth(result.user, result.accessToken);
-        } else {
+        try {
+          const result = await refreshAction();
+          if (result) {
+            setAuth(result.user, result.accessToken);
+          } else {
+            clearAuth();
+          }
+        } catch {
           clearAuth();
         }
       },
@@ -35,7 +51,7 @@ export function AuthProvider({
     );
 
     return () => clearInterval(interval);
-  }, [setAuth, clearAuth, setLoading]);
+  }, [setAuth, clearAuth, setLoading, pathname]);
 
   return <>{children}</>;
 }
