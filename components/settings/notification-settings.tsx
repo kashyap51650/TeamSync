@@ -2,13 +2,7 @@
 "use client";
 import { useState } from "react";
 import { Bell } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { SettingsCard } from "@/components/ui/settings-card";
 import { Switch } from "@/components/ui/switch";
 import { updateNotificationSettingsAction } from "@/actions/settings";
 import { useToast } from "@/hooks/use-toast";
@@ -43,7 +37,7 @@ interface NotificationSettingsProps {
 
 export function NotificationSettings({
   initialSettings = {},
-}: NotificationSettingsProps) {
+}: Readonly<NotificationSettingsProps>) {
   const [settings, setSettings] = useState<Record<string, boolean>>(
     initialSettings || {
       task_assigned: true,
@@ -81,9 +75,11 @@ export function NotificationSettings({
         }));
       }
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "An error occurred";
       toast({
         title: "Error",
-        description: "An error occurred",
+        description: message,
         variant: "destructive",
       });
       // Revert the change on error
@@ -95,30 +91,23 @@ export function NotificationSettings({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <Bell className="h-4 w-4" />
-          Notifications
-        </CardTitle>
-        <CardDescription>Control which alerts you receive</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {NOTIFICATION_SETTINGS.map(({ id, label, desc }) => (
-          <div key={id} className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">{label}</p>
-              <p className="text-xs text-muted-foreground">{desc}</p>
-            </div>
-            <Switch
-              checked={settings[id] || false}
-              onCheckedChange={(checked) =>
-                handleNotificationChange(id, checked)
-              }
-            />
+    <SettingsCard
+      title="Notifications"
+      description="Control which alerts you receive"
+      icon={<Bell className="h-4 w-4" />}
+    >
+      {NOTIFICATION_SETTINGS.map(({ id, label, desc }) => (
+        <div key={id} className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">{label}</p>
+            <p className="text-xs text-muted-foreground">{desc}</p>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+          <Switch
+            checked={settings[id] || false}
+            onCheckedChange={(checked) => handleNotificationChange(id, checked)}
+          />
+        </div>
+      ))}
+    </SettingsCard>
   );
 }
