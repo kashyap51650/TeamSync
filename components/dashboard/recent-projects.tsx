@@ -26,7 +26,7 @@ function ProjectRow({ project }: Readonly<{ project: Project }>) {
 
   return (
     <Link
-      href={`${params.organization}/projects/${project.id}`}
+      href={`/${params.organization}/projects/${project.id}`}
       className="group flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-muted/50"
     >
       <div

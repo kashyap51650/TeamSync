@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthUser } from "./lib/auth";
+import {
+  getAuthUser,
+  setAccessTokenCookie,
+  setRefreshTokenCookie,
+} from "./lib/auth";
 import { fetchFirstOrganizationByUser } from "./services/organization";
 import { rotateRefreshToken } from "./server/services/auth.service";
-import {
-  ACCESS_TOKEN_COOKIE,
-  ACCESS_TOKEN_OPTIONS,
-  REFRESH_TOKEN_COOKIE,
-  REFRESH_TOKEN_OPTIONS,
-} from "./lib/constant";
+import { REFRESH_TOKEN_COOKIE } from "./lib/constant";
 import type { JWTPayload } from "./types";
 
 const PUBLIC_PATHS = ["/login", "/register", "/api/auth"];
@@ -75,16 +74,8 @@ export async function proxy(req: NextRequest) {
   response.headers.set("X-XSS-Protection", "1; mode=block");
 
   if (freshTokens) {
-    response.cookies.set(
-      ACCESS_TOKEN_COOKIE,
-      freshTokens.accessToken,
-      ACCESS_TOKEN_OPTIONS,
-    );
-    response.cookies.set(
-      REFRESH_TOKEN_COOKIE,
-      freshTokens.refreshToken,
-      REFRESH_TOKEN_OPTIONS,
-    );
+    setAccessTokenCookie(response, freshTokens.accessToken);
+    setRefreshTokenCookie(response, freshTokens.refreshToken);
   }
 
   return response;

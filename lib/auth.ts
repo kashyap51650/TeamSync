@@ -4,6 +4,12 @@ import { verifyAccessToken } from "@/server/services/auth.service";
 import type { JWTPayload } from "@/types";
 import { cookies, headers } from "next/headers";
 import bcrypt from "bcrypt";
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_OPTIONS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_OPTIONS,
+} from "./constant";
 
 export async function getAuthUser(
   req?: NextRequest,
@@ -41,21 +47,11 @@ export function requireAuth(
   };
 }
 
-// Cookie helpers
-export const REFRESH_TOKEN_COOKIE = "refresh_token";
-export const ACCESS_TOKEN_COOKIE = "access_token";
-
 export function setAccessTokenCookie(
   response: NextResponse,
   token: string,
 ): void {
-  response.cookies.set(ACCESS_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 15 * 60,
-    path: "/",
-  });
+  response.cookies.set(ACCESS_TOKEN_COOKIE, token, ACCESS_TOKEN_OPTIONS);
 }
 
 export function clearAccessTokenCookie(response: NextResponse): void {
@@ -72,13 +68,7 @@ export function setRefreshTokenCookie(
   response: NextResponse,
   token: string,
 ): void {
-  response.cookies.set(REFRESH_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60, // 7 days
-    path: "/",
-  });
+  response.cookies.set(REFRESH_TOKEN_COOKIE, token, REFRESH_TOKEN_OPTIONS);
 }
 
 export function clearRefreshTokenCookie(response: NextResponse): void {
