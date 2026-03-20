@@ -7,10 +7,12 @@ import {
   updateUserPassword,
   verifyUserPassword,
   getUserNotificationSettings,
+  uploadAvatarImage,
 } from "@/server/repositories/settings.repository";
 
 interface UpdateProfilePayload {
   name: string;
+  avatarUrl?: string;
 }
 
 interface NotificationSettings {
@@ -42,6 +44,7 @@ export async function updateProfileAction(
 
     const result = await updateUserProfile(user.sub, {
       name: payload.name,
+      avatarUrl: payload.avatarUrl,
     });
 
     return {
@@ -121,6 +124,41 @@ export async function updatePasswordAction(
     return {
       success: true,
       data: result,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+export async function uploadAvatarAction(
+  formData: FormData,
+): Promise<SettingsResponse & { url?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return {
+        success: false,
+        error: "Unauthorized",
+      };
+    }
+
+    const file = formData.get("file");
+    if (!(file instanceof File)) {
+      return {
+        success: false,
+        error: "File is required",
+      };
+    }
+
+    const blob = await uploadAvatarImage(user.sub, file);
+
+    return {
+      success: true,
+      url: blob.url,
     };
   } catch (error) {
     return {

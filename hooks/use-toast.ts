@@ -1,46 +1,104 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import type { ExternalToast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
-type ToastType = {
-  id: string;
+type ToastVariant = "default" | "destructive" | "success" | "error" | "info";
+
+type ToastInput = {
   title?: string;
   description?: string;
-  variant?: "default" | "destructive";
-  action?: React.ReactElement;
+  variant?: ToastVariant;
+  action?: ExternalToast["action"];
+  duration?: number;
 };
 
-let toastState: ToastType[] = [];
-let listeners: (() => void)[] = [];
+type ToastId = string | number;
 
-function notify() {
-  listeners.forEach((l) => l());
+type ToastMethodOptions = Omit<ToastInput, "title" | "description" | "variant">;
+
+type ToastHandler = {
+  (input: ToastInput): ToastId;
+  success: (
+    title: string,
+    description?: string,
+    options?: ToastMethodOptions,
+  ) => ToastId;
+  error: (
+    title: string,
+    description?: string,
+    options?: ToastMethodOptions,
+  ) => ToastId;
+  info: (
+    title: string,
+    description?: string,
+    options?: ToastMethodOptions,
+  ) => ToastId;
+};
+
+function inferVariant(title?: string, variant?: ToastVariant): ToastVariant {
+  if (variant) {
+    return variant;
+  }
+
+  const normalizedTitle = title?.trim().toLowerCase();
+
+  if (normalizedTitle === "success") {
+    return "success";
+  }
+
+  if (normalizedTitle === "error") {
+    return "error";
+  }
+
+  if (normalizedTitle === "info") {
+    return "info";
+  }
+
+  return "default";
 }
 
-export function toast(t: Omit<ToastType, "id">) {
-  const id = Math.random().toString(36).slice(2);
-  toastState = [...toastState, { ...t, id }];
-  notify();
-  setTimeout(() => {
-    toastState = toastState.filter((x) => x.id !== id);
-    notify();
-  }, 5000);
+function showToast({
+  title,
+  description,
+  variant,
+  action,
+  duration,
+}: ToastInput) {
+  const resolvedVariant = inferVariant(title, variant);
+  const message = title ?? description ?? "Notification";
+  const toastDescription = title && description ? description : undefined;
+  const options: ExternalToast = {
+    description: toastDescription,
+    action,
+    duration,
+  };
+
+  switch (resolvedVariant) {
+    case "destructive":
+    case "error":
+      return sonnerToast.error(message, options);
+    case "success":
+      return sonnerToast.success(message, options);
+    case "info":
+      return sonnerToast.info(message, options);
+    default:
+      return sonnerToast(message, options);
+  }
 }
+
+export const toast = Object.assign(showToast, {
+  success: (
+    title: string,
+    description?: string,
+    options?: ToastMethodOptions,
+  ) => showToast({ title, description, variant: "success", ...options }),
+  error: (title: string, description?: string, options?: ToastMethodOptions) =>
+    showToast({ title, description, variant: "error", ...options }),
+  info: (title: string, description?: string, options?: ToastMethodOptions) =>
+    showToast({ title, description, variant: "info", ...options }),
+}) as ToastHandler;
 
 export function useToast() {
-  const [toasts, setToasts] = useState<ToastType[]>(toastState);
-
-  const subscribe = useCallback(() => {
-    const handler = () => setToasts([...toastState]);
-    listeners.push(handler);
-    return () => {
-      listeners = listeners.filter((l) => l !== handler);
-    };
-  }, []);
-
-  useState(() => {
-    return subscribe();
-  });
-
-  return { toasts, toast };
+  return { toast };
 }

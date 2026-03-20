@@ -44,3 +44,18 @@ export const PROJECT_COLORS = [
   "#f97316",
   "#14b8a6",
 ];
+
+export const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024;
+
+export const MIME_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+export const DEFAULT_NOTIFICATION_SETTINGS: Record<string, boolean> = {
+  task_assigned: true,
+  task_due_soon: true,
+  project_updates: true,
+};
