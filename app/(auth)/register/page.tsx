@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
 import { registerAction } from "@/actions/auth";
 
 const schema = z.object({
@@ -23,7 +22,6 @@ type FormData = z.infer<typeof schema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -36,19 +34,7 @@ export default function RegisterPage() {
   const onSubmit = async ({ name, email, password }: FormData) => {
     setServerError("");
     try {
-      const result = await registerAction({ name, email, password });
-      setAuth(result.user, result.accessToken);
-
-      // Create org for user via API
-      // await fetch("/api/org", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${result.accessToken}`,
-      //   },
-      //   body: JSON.stringify({ name: orgName }),
-      // });
-
+      await registerAction({ name, email, password });
       router.replace("/");
     } catch (err) {
       setServerError(

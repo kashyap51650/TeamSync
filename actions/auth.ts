@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { cookies } from "next/headers";
 import {
   loginUser,
@@ -10,24 +11,12 @@ import {
   rotateRefreshToken,
 } from "@/server/services/auth.service";
 import type { AuthUser } from "@/types";
-
-// Cookie constants and options
-const ACCESS_TOKEN_COOKIE = "access_token";
-const REFRESH_TOKEN_COOKIE = "refresh_token";
-const ACCESS_TOKEN_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 15 * 60, // 15 minutes
-  path: "/",
-};
-const REFRESH_TOKEN_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 7 * 24 * 60 * 60, // 7 days
-  path: "/",
-};
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_OPTIONS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_OPTIONS,
+} from "@/lib/constant";
 
 export interface LoginPayload {
   email: string;
@@ -88,7 +77,7 @@ export async function logoutAction(): Promise<{ ok: boolean }> {
     const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
     if (refreshToken) {
-      await revokeRefreshToken(refreshToken).catch(() => {}); // Ignore errors if token is invalid
+      after(() => revokeRefreshToken(refreshToken));
     }
 
     // Clear cookies

@@ -59,3 +59,21 @@ export const DEFAULT_NOTIFICATION_SETTINGS: Record<string, boolean> = {
   task_due_soon: true,
   project_updates: true,
 };
+
+// Cookie constants and options
+export const ACCESS_TOKEN_COOKIE = "access_token";
+export const REFRESH_TOKEN_COOKIE = "refresh_token";
+export const ACCESS_TOKEN_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  maxAge: 15 * 60, // 15 minutes
+  path: "/",
+};
+export const REFRESH_TOKEN_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  maxAge: 7 * 24 * 60 * 60, // 7 days
+  path: "/",
+};

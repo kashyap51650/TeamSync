@@ -30,7 +30,6 @@ export default async function ProjectPage({
   params: Promise<{ id: string; organization: string }>;
 }>) {
   const { id, organization } = await params;
-  console.log("Project ID from params:", await params);
   const project = await fetchProjectById(id);
   const user = await getAuthUser();
   const currentOrg = await fetchOrganizationBySlug(organization);
@@ -39,7 +38,7 @@ export default async function ProjectPage({
 
   const teamMembers = teamMembersData.map((val) => {
     return {
-      id: val.id,
+      id: val.user.id,
       name: val.user.name,
     };
   });
