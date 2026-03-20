@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
-
-const DEFAULT_NOTIFICATION_SETTINGS: Record<string, boolean> = {
-  task_assigned: true,
-  task_due_soon: true,
-  project_updates: true,
-};
+import { put } from "@vercel/blob";
+import {
+  DEFAULT_NOTIFICATION_SETTINGS,
+  MAX_AVATAR_FILE_SIZE,
+  MIME_EXTENSIONS,
+} from "@/lib/constant";
 
 export async function updateUserProfile(
   userId: string,
@@ -81,4 +81,22 @@ export async function verifyUserPassword(userId: string, password: string) {
   // You'll need to import and use your password comparison function
   const { comparePassword } = await import("@/lib/auth");
   return comparePassword(password, user.passwordHash);
+}
+
+export async function uploadAvatarImage(userId: string, file: File) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image files are allowed");
+  }
+
+  if (file.size > MAX_AVATAR_FILE_SIZE) {
+    throw new Error("File size exceeds 5MB");
+  }
+
+  const extension = MIME_EXTENSIONS[file.type] ?? "png";
+  const blobPath = `avatars/${userId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+  return put(blobPath, file, {
+    access: "public",
+    addRandomSuffix: false,
+  });
 }

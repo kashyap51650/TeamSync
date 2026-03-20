@@ -10,3 +10,15 @@ export async function getUsers() {
     },
   });
 }
+
+export async function getUserById(userId: string) {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarUrl: true,
+    },
+  });
+}

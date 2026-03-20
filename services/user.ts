@@ -1,6 +1,23 @@
 import { getTeamMembers } from "@/server/repositories/organization.repository";
 import { getOrgId } from "@/server/repositories/projects.repository";
-import { getUsers } from "@/server/repositories/users.repository";
+import { getUserById, getUsers } from "@/server/repositories/users.repository";
+
+export const fetchUserDetails = async (userId: string | undefined) => {
+  "use cache";
+  try {
+    if (!userId) {
+      throw new Error("User ID is required to fetch user details");
+    }
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  } catch (error) {
+    console.error("Error fetching user details", error);
+    throw error;
+  }
+};
 
 export const fetchUsers = async () => {
   "use cache";
