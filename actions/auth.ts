@@ -31,7 +31,7 @@ export interface RegisterPayload {
 
 export async function loginAction(
   payload: LoginPayload,
-): Promise<{ user: AuthUser; accessToken: string }> {
+): Promise<{ ok: boolean }> {
   try {
     const user = await loginUser(payload.email, payload.password);
     const accessToken = await generateAccessToken(user);
@@ -41,7 +41,7 @@ export async function loginAction(
     cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, ACCESS_TOKEN_OPTIONS);
     cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, REFRESH_TOKEN_OPTIONS);
 
-    return { user, accessToken };
+    return { ok: true };
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : "Login failed");
   }
@@ -49,7 +49,7 @@ export async function loginAction(
 
 export async function registerAction(
   payload: RegisterPayload,
-): Promise<{ user: AuthUser; accessToken: string }> {
+): Promise<{ ok: boolean }> {
   try {
     const user = await registerUser(
       payload.email,
@@ -63,7 +63,7 @@ export async function registerAction(
     cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, ACCESS_TOKEN_OPTIONS);
     cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, REFRESH_TOKEN_OPTIONS);
 
-    return { user, accessToken };
+    return { ok: true };
   } catch (error) {
     throw new Error(
       error instanceof Error ? error.message : "Registration failed",

@@ -152,37 +152,55 @@ export function Sidebar({
         </div>
 
         {NAV_ITEMS.map((item) => {
-          const active = isActive(item.path);
           const href = buildHref(item.path);
           const disabled = organizations.length === 0;
-          return (
-            <Link
-              key={href}
-              href={disabled ? "#" : href}
-              onClick={disabled ? (e) => e.preventDefault() : undefined}
-              className={cn(
-                "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
-                active && !disabled
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                  : disabled
-                    ? "text-sidebar-foreground/40 cursor-not-allowed opacity-60"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              )}
-            >
-              <item.icon
-                className={cn(
-                  "h-4 w-4 shrink-0 transition-colors",
-                  active && !disabled
-                    ? "text-sidebar-primary-foreground"
-                    : disabled
-                      ? "text-sidebar-foreground/30"
-                      : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
-                )}
-              />
+          const active = !disabled && isActive(item.path);
+
+          const baseClasses = cn(
+            "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
+            active
+              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+              : disabled
+                ? "text-sidebar-foreground/40 opacity-60"
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          );
+
+          const iconClasses = cn(
+            "h-4 w-4 shrink-0 transition-colors",
+            active
+              ? "text-sidebar-primary-foreground"
+              : disabled
+                ? "text-sidebar-foreground/30"
+                : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
+          );
+
+          const itemInner = (
+            <>
+              <item.icon className={iconClasses} />
               {item.label}
-              {active && !disabled && (
+              {active && (
                 <ChevronRight className="ml-auto h-3 w-3 opacity-50" />
               )}
+            </>
+          );
+
+          if (disabled) {
+            return (
+              <div
+                key={href}
+                role="link"
+                aria-disabled="true"
+                tabIndex={-1}
+                className={baseClasses}
+              >
+                {itemInner}
+              </div>
+            );
+          }
+
+          return (
+            <Link key={href} href={href} className={baseClasses}>
+              {itemInner}
             </Link>
           );
         })}

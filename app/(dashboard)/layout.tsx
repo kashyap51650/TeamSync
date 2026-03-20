@@ -5,6 +5,7 @@ import { fetchOrganizationByUser } from "@/services/organization";
 import { fetchUserDetails } from "@/services/user";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import Loading from "./loading";
 
 async function DashboardContent({ children }: { children: React.ReactNode }) {
   const userId = await getAuthUserId();
@@ -34,7 +35,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Suspense>
+    <Suspense fallback={<Loading />}>
       <DashboardContent>{children}</DashboardContent>
     </Suspense>
   );
