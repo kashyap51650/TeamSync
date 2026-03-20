@@ -4,8 +4,8 @@ import {
   SecuritySettings,
 } from "@/components/settings";
 import {
-  Icon as AppearanceIcon,
-  ToggleRow as AppearanceToggleRow,
+  AppearanceIcon,
+  AppearanceToggleRow,
 } from "@/components/settings/appearance-settings";
 import {
   Card,

@@ -14,14 +14,14 @@ function useThemeState() {
   return { ready, isDark, onChange };
 }
 
-export function Icon() {
+export function AppearanceIcon() {
   const { ready, isDark } = useThemeState();
 
   if (!ready) return <Sun className="h-4 w-4 opacity-0" aria-hidden="true" />;
   return isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
 }
 
-export function ToggleRow() {
+export function AppearanceToggleRow() {
   const { ready, isDark, onChange } = useThemeState();
 
   return (
@@ -36,5 +36,3 @@ export function ToggleRow() {
     </div>
   );
 }
-
-export const AppearanceThemeControls = { Icon, ToggleRow };
