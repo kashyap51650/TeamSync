@@ -1,0 +1,23 @@
+# Prettier
+.prettierignore
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Package manager
+node_modules/
+
+# Generated files
+next-env.d.ts
+*.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Prisma generated client
+prisma/generated/
+
+# Misc
+public/
