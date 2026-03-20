@@ -1,4 +1,4 @@
-import { refreshApi } from "@/actions/auth";
+import { refreshAction } from "@/actions/auth";
 import { useAuthStore } from "@/store/auth";
 
 class ApiClient {
@@ -11,7 +11,7 @@ class ApiClient {
   }
 
   private async refreshAndRetry<T>(fn: () => Promise<Response>): Promise<T> {
-    const refreshResult = await refreshApi();
+    const refreshResult = await refreshAction();
     if (refreshResult) {
       useAuthStore
         .getState()

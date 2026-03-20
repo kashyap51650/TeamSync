@@ -20,11 +20,12 @@ export async function getTeamMembers(OrganizationId: string) {
 }
 
 export async function getOrganizationByUserId(userId: string) {
-  return await prisma.organization.findMany({
+  const adminOrganizations = await prisma.organization.findMany({
     where: {
       members: {
         some: {
           userId: userId,
+          role: "ADMIN",
         },
       },
     },
@@ -37,6 +38,38 @@ export async function getOrganizationByUserId(userId: string) {
       },
     },
   });
+
+  // Get organizations where user is member/manager
+  const memberOrganizations = await prisma.organization.findMany({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+          role: {
+            in: ["MEMBER", "MANAGER"],
+          },
+        },
+      },
+    },
+    include: {
+      projects: {
+        where: {
+          members: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  // Combine results
+  return [...adminOrganizations, ...memberOrganizations];
 }
 
 export async function createOrganization(data: {

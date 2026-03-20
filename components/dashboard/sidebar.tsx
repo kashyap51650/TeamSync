@@ -92,11 +92,11 @@ export function Sidebar({
             <Avatar className="h-7 w-7 shrink-0">
               <AvatarImage src={activeOrg?.logoUrl ?? undefined} />
               <AvatarFallback className="text-[11px] bg-primary text-primary-foreground">
-                {getInitials(activeOrg?.name ?? "")}
+                {activeOrg ? getInitials(activeOrg.name) : "?"}
               </AvatarFallback>
             </Avatar>
             <span className="flex-1 truncate text-left font-semibold text-sidebar-foreground tracking-tight">
-              {activeOrg?.name}
+              {activeOrg?.name ?? "No Organization"}
             </span>
             <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-sidebar-foreground/50" />
           </button>
@@ -154,27 +154,33 @@ export function Sidebar({
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.path);
           const href = buildHref(item.path);
+          const disabled = organizations.length === 0;
           return (
             <Link
               key={href}
-              href={href}
+              href={disabled ? "#" : href}
+              onClick={disabled ? (e) => e.preventDefault() : undefined}
               className={cn(
                 "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
-                active
+                active && !disabled
                   ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  : disabled
+                    ? "text-sidebar-foreground/40 cursor-not-allowed opacity-60"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >
               <item.icon
                 className={cn(
                   "h-4 w-4 shrink-0 transition-colors",
-                  active
+                  active && !disabled
                     ? "text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
+                    : disabled
+                      ? "text-sidebar-foreground/30"
+                      : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
                 )}
               />
               {item.label}
-              {active && (
+              {active && !disabled && (
                 <ChevronRight className="ml-auto h-3 w-3 opacity-50" />
               )}
             </Link>
