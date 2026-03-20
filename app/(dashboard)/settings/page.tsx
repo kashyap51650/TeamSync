@@ -7,16 +7,11 @@ import {
   AppearanceIcon,
   AppearanceToggleRow,
 } from "@/components/settings/appearance-settings";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SettingsCard } from "@/components/ui/settings-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuthUser } from "@/lib/auth";
 import { fetchUserDetails } from "@/services/user";
+import { Shield } from "lucide-react";
 import { Suspense } from "react";
 
 export default async function SettingsPage() {
@@ -31,33 +26,25 @@ export default async function SettingsPage() {
           Manage your account and preferences
         </p>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Profile</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-            <ProfileSettings userPromise={userPromise} />
-          </Suspense>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <AppearanceIcon />
-            Appearance
-          </CardTitle>
-          <CardDescription>
-            Customize how TeamSync looks for you
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <AppearanceToggleRow />
-        </CardContent>
-      </Card>
+      <SettingsCard
+        title="Profile"
+        description="Update your personal information"
+      >
+        <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+          <ProfileSettings userPromise={userPromise} />
+        </Suspense>
+      </SettingsCard>
+      <SettingsCard
+        title="Appearance"
+        description="Customize how TeamSync looks for you"
+        icon={<AppearanceIcon />}
+      >
+        <AppearanceToggleRow />
+      </SettingsCard>
       <NotificationSettings />
-      <SecuritySettings />
+      <SettingsCard title="Security" icon={<Shield className="h-4 w-4" />}>
+        <SecuritySettings />
+      </SettingsCard>
     </div>
   );
 }
