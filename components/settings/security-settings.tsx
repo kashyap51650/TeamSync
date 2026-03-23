@@ -12,10 +12,7 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/hooks/use-toast";
-import {
-  UpdatePasswordForm,
-  updatePasswordSchema,
-} from "@/schema/user-settings";
+import { UpdatePasswordForm, updatePasswordSchema } from "@/schema/user-settings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -38,21 +35,21 @@ export function SecuritySettings() {
 
   const handleUpdatePassword = async (formData: UpdatePasswordForm) => {
     setTransition(async () => {
-      const result = await updatePasswordAction({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword,
-      });
-
-      if (result.success) {
+      try {
+        await updatePasswordAction({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        });
         toast({
           title: "Success",
           description: "Password updated successfully",
         });
         form.reset();
-      } else {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to update password";
         toast({
           title: "Error",
-          description: result.error || "Failed to update password",
+          description: errorMessage,
           variant: "destructive",
         });
       }
@@ -61,10 +58,7 @@ export function SecuritySettings() {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleUpdatePassword)}
-        className="space-y-4"
-      >
+      <form onSubmit={form.handleSubmit(handleUpdatePassword)} className="space-y-4">
         <FormField
           control={form.control}
           name="currentPassword"
@@ -72,11 +66,7 @@ export function SecuritySettings() {
             <FormItem>
               <FormLabel>Current password</FormLabel>
               <FormControl>
-                <PasswordInput
-                  placeholder="••••••••"
-                  label="current password"
-                  {...field}
-                />
+                <PasswordInput placeholder="••••••••" label="current password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -90,11 +80,7 @@ export function SecuritySettings() {
               <FormItem>
                 <FormLabel>New password</FormLabel>
                 <FormControl>
-                  <PasswordInput
-                    placeholder="••••••••"
-                    label="new password"
-                    {...field}
-                  />
+                  <PasswordInput placeholder="••••••••" label="new password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -107,11 +93,7 @@ export function SecuritySettings() {
               <FormItem>
                 <FormLabel>Confirm password</FormLabel>
                 <FormControl>
-                  <PasswordInput
-                    placeholder="••••••••"
-                    label="confirm password"
-                    {...field}
-                  />
+                  <PasswordInput placeholder="••••••••" label="confirm password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
