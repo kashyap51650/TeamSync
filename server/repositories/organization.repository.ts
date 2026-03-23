@@ -99,10 +99,7 @@ export async function getOrganizationById(id: string) {
   });
 }
 
-export async function checkUserisOrganizationMember(
-  userId: string,
-  organizationSlug: string,
-) {
+export async function checkUserisOrganizationMember(userId: string, organizationSlug: string) {
   const organization = await prisma.organization.findUnique({
     where: {
       slug: organizationSlug,
@@ -119,10 +116,7 @@ export async function checkUserisOrganizationMember(
   return !!organization?.members.length;
 }
 
-export async function checkUserisOrganizationAdmin(
-  userId: string,
-  organizationSlug: string,
-) {
+export async function checkUserisOrganizationAdmin(userId: string, organizationSlug: string) {
   const organization = await prisma.organization.findUnique({
     where: {
       slug: organizationSlug,
@@ -163,6 +157,76 @@ export async function addMemberToOrganization(data: {
       organizationId: data.organizationId,
       userId: user.id,
       role: data.role,
+    },
+  });
+}
+
+export async function getUserTasksInOrganization(userId: string, organizationId: string) {
+  return await prisma.task.findMany({
+    where: {
+      assignedToId: userId,
+      project: {
+        organizationId: organizationId,
+      },
+      status: {
+        notIn: ["DONE", "CANCELLED"],
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      project: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+}
+
+export async function removeTeamMemberFromOrganization(organizationId: string, userId: string) {
+  const projectIds = await prisma.project.findMany({
+    where: {
+      organizationId: organizationId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await prisma.task.updateMany({
+    where: {
+      projectId: { in: projectIds.map((p) => p.id) },
+      assignedToId: userId,
+    },
+    data: {
+      assignedToId: null,
+    },
+  });
+
+  await prisma.projectMember.deleteMany({
+    where: {
+      projectId: { in: projectIds.map((p) => p.id) },
+      userId: userId,
+    },
+  });
+
+  await prisma.teamMember.delete({
+    where: {
+      userId_organizationId: {
+        userId,
+        organizationId,
+      },
+    },
+  });
+}
+
+export async function getOrganizationMemberCount(organizationId: string) {
+  return await prisma.teamMember.count({
+    where: {
+      organizationId: organizationId,
     },
   });
 }

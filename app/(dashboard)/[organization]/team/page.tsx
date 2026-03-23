@@ -49,14 +49,12 @@ export default async function TeamPage({
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16">
             <Users className="mb-3 h-10 w-10 text-muted-foreground/30" />
             <h3 className="font-semibold">No team members yet</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Invite colleagues to collaborate
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Invite colleagues to collaborate</p>
           </div>
         ) : (
           <div className="space-y-3">
             {members?.map((member) => (
-              <MemberCard key={member.id} member={member} />
+              <MemberCard key={member.id} member={member} organizationId={currentOrg.id} />
             ))}
           </div>
         )}
