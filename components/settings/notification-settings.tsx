@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
 import { Bell } from "lucide-react";
@@ -54,29 +53,15 @@ export function NotificationSettings({
     }));
 
     try {
-      const result = await updateNotificationSettingsAction({
+      await updateNotificationSettingsAction({
         [id]: checked,
       });
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: "Notification settings updated",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to update settings",
-          variant: "destructive",
-        });
-        // Revert the change on error
-        setSettings((prev) => ({
-          ...prev,
-          [id]: !checked,
-        }));
-      }
+      toast({
+        title: "Success",
+        description: "Notification settings updated",
+      });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "An error occurred";
+      const message = error instanceof Error ? error.message : "An error occurred";
       toast({
         title: "Error",
         description: message,

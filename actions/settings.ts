@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/auth";
+import { authenticatedAction } from "@/lib/action";
 import {
   updateUserProfile,
   updateAllNotificationSettings,
@@ -24,147 +24,48 @@ interface UpdatePasswordPayload {
   newPassword: string;
 }
 
-interface SettingsResponse {
-  success: boolean;
-  error?: string;
-  data?: unknown;
-}
-
-export async function updateProfileAction(
-  payload: UpdateProfilePayload,
-): Promise<SettingsResponse> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
+export const updateProfileAction = authenticatedAction(
+  async (user, payload: UpdateProfilePayload) => {
     const result = await updateUserProfile(user.sub, {
       name: payload.name,
       avatarUrl: payload.avatarUrl,
     });
 
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
-  }
-}
+    return result;
+  },
+);
 
-export async function updateNotificationSettingsAction(
-  payload: NotificationSettings,
-): Promise<SettingsResponse> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    // Get current settings and merge with new ones
+export const updateNotificationSettingsAction = authenticatedAction(
+  async (user, payload: NotificationSettings) => {
     const currentSettings = await getUserNotificationSettings(user.sub);
     const mergedSettings = {
       ...currentSettings,
       ...payload,
     };
 
-    const result = await updateAllNotificationSettings(
-      user.sub,
-      mergedSettings,
-    );
+    const result = await updateAllNotificationSettings(user.sub, mergedSettings);
 
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
-  }
-}
+    return result;
+  },
+);
 
-export async function updatePasswordAction(
-  payload: UpdatePasswordPayload,
-): Promise<SettingsResponse> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    // Verify current password
+export const updatePasswordAction = authenticatedAction(
+  async (user, payload: UpdatePasswordPayload) => {
     const isValid = await verifyUserPassword(user.sub, payload.currentPassword);
     if (!isValid) {
-      return {
-        success: false,
-        error: "Current password is incorrect",
-      };
+      throw new Error("Current password is incorrect");
     }
-
-    // Update password
     const result = await updateUserPassword(user.sub, payload.newPassword);
 
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
+    return result;
+  },
+);
+
+export const uploadAvatarAction = authenticatedAction(async (user, formData: FormData) => {
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    throw new Error("File is required");
   }
-}
-
-export async function uploadAvatarAction(
-  formData: FormData,
-): Promise<SettingsResponse & { url?: string }> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    const file = formData.get("file");
-    if (!(file instanceof File)) {
-      return {
-        success: false,
-        error: "File is required",
-      };
-    }
-
-    const blob = await uploadAvatarImage(user.sub, file);
-
-    return {
-      success: true,
-      url: blob.url,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
-  }
-}
+  const blob = await uploadAvatarImage(user.sub, file);
+  return { url: blob.url };
+});

@@ -15,9 +15,7 @@ interface ProfileSettingsProps {
   userPromise: Promise<User>;
 }
 
-export function ProfileSettings({
-  userPromise,
-}: Readonly<ProfileSettingsProps>) {
+export function ProfileSettings({ userPromise }: Readonly<ProfileSettingsProps>) {
   const user = use(userPromise);
 
   const [isPending, startTransition] = useTransition();
@@ -42,12 +40,11 @@ export function ProfileSettings({
 
   const handleSaveChanges = async () => {
     startTransition(async () => {
-      const result = await updateProfileAction(formData);
-      if (result.success) {
+      try {
+        await updateProfileAction(formData);
         toast.success("Profile updated successfully");
-      }
-      if (result.error) {
-        toast.error(result.error);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to update profile");
       }
     });
   };
@@ -61,12 +58,7 @@ export function ProfileSettings({
             {user ? getInitials(user.name) : "?"}
           </AvatarFallback>
         </Avatar>
-        <Button
-          variant="outline"
-          size="sm"
-          type="button"
-          onClick={() => setIsUploadOpen(true)}
-        >
+        <Button variant="outline" size="sm" type="button" onClick={() => setIsUploadOpen(true)}>
           Change avatar
         </Button>
       </div>
@@ -82,11 +74,7 @@ export function ProfileSettings({
         </div>
       </div>
 
-      <Button
-        size="sm"
-        onClick={handleSaveChanges}
-        disabled={isPending || !isValueChange}
-      >
+      <Button size="sm" onClick={handleSaveChanges} disabled={isPending || !isValueChange}>
         {isPending ? "Saving..." : "Save changes"}
       </Button>
 

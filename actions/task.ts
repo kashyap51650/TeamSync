@@ -1,34 +1,16 @@
 "use server";
 
-import { getAuthUser } from "@/lib/auth";
+import { authenticatedAction } from "@/lib/action";
 import { CreateTaskForm } from "@/schema/task-schema";
-import {
-  createTask,
-  deleteTask,
-  updateTask,
-} from "@/server/repositories/tasks.repository";
+import { createTask, deleteTask, updateTask } from "@/server/repositories/tasks.repository";
 import { updateTag } from "next/cache";
 
 type CreateTaskActionData = CreateTaskForm & {
   projectId: string;
 };
 
-export const createTaskAction = async (data: CreateTaskActionData) => {
-  const user = await getAuthUser();
-
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  const {
-    title,
-    description,
-    priority,
-    status,
-    assignedToId,
-    dueDate,
-    projectId,
-  } = data;
+export const createTaskAction = authenticatedAction(async (user, data: CreateTaskActionData) => {
+  const { title, description, priority, status, assignedToId, dueDate, projectId } = data;
 
   const task = await createTask({
     title,
@@ -42,39 +24,30 @@ export const createTaskAction = async (data: CreateTaskActionData) => {
   });
   updateTag("tasks-list-" + projectId);
   return task;
-};
-export const updateTaskAction = async (
-  taskId: string,
-  data: Partial<CreateTaskForm>,
-) => {
-  const user = await getAuthUser();
+});
 
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
+export const updateTaskAction = authenticatedAction(
+  async (_user, taskId: string, data: Partial<CreateTaskForm>) => {
+    const { title, description, priority, status, assignedToId, dueDate } = data;
 
-  const { title, description, priority, status, assignedToId, dueDate } = data;
+    const task = await updateTask(taskId, {
+      title,
+      description,
+      priority,
+      status,
+      assignedToId,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+    });
+    updateTag("tasks-list-" + task.projectId);
+    updateTag("tasks-list");
+    updateTag(`project-${task.projectId}`);
+    return task;
+  },
+);
 
-  const task = await updateTask(taskId, {
-    title,
-    description,
-    priority,
-    status,
-    assignedToId,
-    dueDate: dueDate ? new Date(dueDate) : undefined,
-  });
-  updateTag("tasks-list-" + task.projectId);
-  updateTag("tasks-list");
-  return task;
-};
-
-export const deleteTaskAction = async (taskId: string, projectId: string) => {
-  const user = await getAuthUser();
-
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  await deleteTask(taskId);
-  updateTag("tasks-list-" + projectId);
-};
+export const deleteTaskAction = authenticatedAction(
+  async (_user, taskId: string, projectId: string) => {
+    await deleteTask(taskId);
+    updateTag("tasks-list-" + projectId);
+  },
+);

@@ -19,9 +19,7 @@ interface ImageUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUploaded: (url: string) => void;
-  onUpload: (
-    file: File,
-  ) => Promise<{ success: boolean; url?: string; error?: string }>;
+  onUpload: (file: File) => Promise<{ url: string }>;
   title?: string;
   description?: string;
   maxSizeInMb?: number;
@@ -96,8 +94,8 @@ export function ImageUploadDialog({
     try {
       const result = await onUpload(file);
 
-      if (!result.success || !result.url) {
-        throw new Error(result.error || "Upload failed");
+      if (!result.url) {
+        throw new Error("Upload failed");
       }
 
       onUploaded(result.url);
