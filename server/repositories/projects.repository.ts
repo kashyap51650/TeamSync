@@ -122,3 +122,44 @@ export async function addProjectMembers(projectId: string, userIds: string[]) {
 export async function deleteProject(id: string) {
   return prisma.project.delete({ where: { id } });
 }
+
+export async function getUserTasksInProject(userId: string, projectId: string) {
+  return await prisma.task.findMany({
+    where: {
+      projectId: projectId,
+      assignedToId: userId,
+      status: {
+        notIn: ["DONE", "CANCELLED"],
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+    },
+  });
+}
+
+export async function removeProjectMember(projectId: string, userId: string) {
+  await prisma.task.updateMany({
+    where: {
+      projectId: projectId,
+      assignedToId: userId,
+      status: {
+        notIn: ["DONE", "CANCELLED"],
+      },
+    },
+    data: {
+      assignedToId: null,
+    },
+  });
+
+  await prisma.projectMember.delete({
+    where: {
+      projectId_userId: {
+        projectId,
+        userId,
+      },
+    },
+  });
+}

@@ -5,19 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Icons
-import {
-  BarChart3,
-  CheckSquare,
-  ChevronRight,
-  FolderKanban,
-  Users,
-} from "lucide-react";
+import { BarChart3, CheckSquare, ChevronRight, FolderKanban, Users } from "lucide-react";
 
 import { KanbanBoardTab } from "@/components/projects/kanban-board-tab";
 import { ProjectActionDropdown } from "@/components/projects/project-action-dropdown";
 import { ProjectAnalyticsTab } from "@/components/projects/project-analytics-tab";
 import { ProjectMemberCard } from "@/components/projects/project-members";
 import { ProjectTasksTab } from "@/components/projects/project-tasks";
+import { ProjectAnalyticsSkeleton } from "@/components/skeletons";
 import { fetchProjectById } from "@/services/projects";
 import { Suspense } from "react";
 import { getAuthUser } from "@/lib/auth";
@@ -48,9 +43,7 @@ export default async function ProjectPage({
       <div className="flex flex-col items-center justify-center py-24">
         <FolderKanban className="h-12 w-12 text-muted-foreground/30 mb-4" />
         <h2 className="text-lg font-semibold">Project not found</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          This project may have been deleted.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">This project may have been deleted.</p>
       </div>
     );
   }
@@ -116,7 +109,9 @@ export default async function ProjectPage({
           {/* ── Analytics Tab ── */}
           <TabsContent value="analytics" className="mt-0">
             {project?.tasks.length && (
-              <ProjectAnalyticsTab tasks={project?.tasks} />
+              <Suspense fallback={<ProjectAnalyticsSkeleton />}>
+                <ProjectAnalyticsTab tasks={project?.tasks} />
+              </Suspense>
             )}
           </TabsContent>
 

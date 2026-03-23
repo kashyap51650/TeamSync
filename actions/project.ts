@@ -7,6 +7,8 @@ import {
   addProjectMembers,
   getOrgId,
   updateProject,
+  removeProjectMember,
+  getUserTasksInProject,
 } from "@/server/repositories/projects.repository";
 import { revalidateTag, updateTag } from "next/cache";
 
@@ -81,5 +83,45 @@ export const updateProjectAction = authenticatedAction(
 
     revalidateTag("projects-list", "max");
     return project;
+  },
+);
+
+export const removeProjectMemberAction = authenticatedAction(
+  async (_user, projectId: string, userId: string) => {
+    const assignedTasks = await getUserTasksInProject(userId, projectId);
+
+    if (assignedTasks.length > 0) {
+      return {
+        success: false,
+        warning: true,
+        message: "This member has active tasks assigned in this project",
+        taskCount: assignedTasks.length,
+        tasks: assignedTasks,
+      };
+    }
+
+    await removeProjectMember(projectId, userId);
+
+    updateTag(`project-${projectId}`);
+    updateTag("projects-list");
+
+    return {
+      success: true,
+      message: "Member removed from project",
+    };
+  },
+);
+
+export const forceRemoveProjectMemberAction = authenticatedAction(
+  async (_user, projectId: string, userId: string) => {
+    await removeProjectMember(projectId, userId);
+
+    updateTag(`project-${projectId}`);
+    updateTag("projects-list");
+
+    return {
+      success: true,
+      message: "Member removed and all tasks unassigned",
+    };
   },
 );
