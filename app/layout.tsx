@@ -1,11 +1,10 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
-import setupLocatorUI from "@locator/runtime";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,10 +24,6 @@ export const metadata: Metadata = {
   description: "Track projects, tasks, and team performance in real time.",
 };
 
-// if (process.env.NODE_ENV === "development") {
-setupLocatorUI();
-// }
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,9 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -46,7 +39,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            {children}
+            <Suspense fallback={<div className="text-center mt-20">Loading...</div>}>
+              {children}
+            </Suspense>
             <Toaster position="top-right" />
           </QueryProvider>
         </ThemeProvider>

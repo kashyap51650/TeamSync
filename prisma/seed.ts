@@ -1,4 +1,5 @@
 // prisma/seed.ts
+import { TaskStatus } from "@/types";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -34,8 +35,9 @@ async function main() {
     where: { slug: "acme-corp" },
     update: {},
     create: {
-      name: "Acme Corp",
+      name: "Acme Corporation",
       slug: "acme-corp",
+      createdById: user.id,
     },
   });
 
@@ -134,9 +136,11 @@ async function main() {
   for (const task of tasks) {
     await prisma.task.create({
       data: {
-        ...task,
+        title: task.title,
+        status: task.status as TaskStatus,
+        projectId: task.projectId,
+        assignedToId: task.assignedToId,
         createdById: user.id,
-        completedAt: task.status === "DONE" ? new Date() : null,
       },
     });
   }

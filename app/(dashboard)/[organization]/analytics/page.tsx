@@ -1,14 +1,6 @@
-// src/app/(dashboard)/analytics/page.tsx
 "use client";
-import { ProductivityChart } from "@/components/dashboard/productivity-chart";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
@@ -45,14 +37,11 @@ function WorkloadChart() {
         {isLoading ? (
           [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10" />)
         ) : data?.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">
-            No team members yet
-          </p>
+          <p className="py-4 text-center text-sm text-muted-foreground">No team members yet</p>
         ) : (
           data?.map((member) => {
             const total = member.taskCount + member.completedCount;
-            const pct =
-              total > 0 ? Math.round((member.taskCount / total) * 100) : 0;
+            const pct = total > 0 ? Math.round((member.taskCount / total) * 100) : 0;
 
             return (
               <div key={member.userId} className="flex items-center gap-3">
@@ -63,9 +52,7 @@ function WorkloadChart() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium truncate">
-                      {member.userName}
-                    </span>
+                    <span className="text-sm font-medium truncate">{member.userName}</span>
                     <span className="text-xs text-muted-foreground shrink-0 ml-2">
                       {member.taskCount} active
                     </span>
@@ -100,9 +87,7 @@ function ProjectCompletionChart() {
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Project Completion Rates</CardTitle>
-        <CardDescription>
-          Percentage of tasks completed per project
-        </CardDescription>
+        <CardDescription>Percentage of tasks completed per project</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -113,15 +98,8 @@ function ProjectCompletionChart() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart
-              data={chartData}
-              margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
-                vertical={false}
-              />
+            <BarChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
                 dataKey="name"
                 tickLine={false}
@@ -149,13 +127,7 @@ function ProjectCompletionChart() {
                 {chartData.map((entry, i) => (
                   <Cell
                     key={i}
-                    fill={
-                      entry.rate >= 75
-                        ? "#10b981"
-                        : entry.rate >= 40
-                          ? "#6366f1"
-                          : "#f59e0b"
-                    }
+                    fill={entry.rate >= 75 ? "#10b981" : entry.rate >= 40 ? "#6366f1" : "#f59e0b"}
                   />
                 ))}
               </Bar>
@@ -178,7 +150,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <ProductivityChart />
+        {/* <ProductivityChart /> */}
         <WorkloadChart />
       </div>
 

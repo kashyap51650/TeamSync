@@ -15,15 +15,14 @@ async function getOrgId(userId: string): Promise<string | null> {
 
 export const GET = requireAuth(async (req: NextRequest, user: JWTPayload) => {
   const orgId = await getOrgId(user.sub);
-  if (!orgId)
-    return NextResponse.json({ error: "No organization" }, { status: 404 });
+  if (!orgId) return NextResponse.json({ error: "No organization" }, { status: 404 });
 
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") ?? "overview";
 
   switch (type) {
     case "overview": {
-      const stats = await analyticsRepo.getOrgAnalytics(orgId);
+      const stats = await analyticsRepo.getOrgAnalytics(orgId, user.sub);
       return NextResponse.json({ data: stats });
     }
     case "productivity": {
