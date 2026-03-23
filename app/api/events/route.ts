@@ -4,8 +4,8 @@ import { sseManager } from "@/lib/sse";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
+// export const dynamic = "force-dynamic";
+// export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const user = await getAuthUser(req);

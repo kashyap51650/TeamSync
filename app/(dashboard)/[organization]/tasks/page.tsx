@@ -38,23 +38,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const COLUMNS: TaskStatus[] = [
-  "BACKLOG",
-  "TODO",
-  "IN_PROGRESS",
-  "IN_REVIEW",
-  "DONE",
-];
+const COLUMNS: TaskStatus[] = ["BACKLOG", "TODO", "IN_PROGRESS", "IN_REVIEW", "DONE"];
 
 const createSchema = z.object({
   title: z.string().min(1, "Title is required"),
   projectId: z.string().uuid("Select a project"),
-  priority: z
-    .enum(["URGENT", "HIGH", "MEDIUM", "LOW", "NO_PRIORITY"])
-    .default("NO_PRIORITY"),
-  status: z
-    .enum(["BACKLOG", "TODO", "IN_PROGRESS", "IN_REVIEW", "DONE", "CANCELLED"])
-    .default("TODO"),
+  priority: z.enum(["URGENT", "HIGH", "MEDIUM", "LOW", "NO_PRIORITY"]),
+  status: z.enum(["BACKLOG", "TODO", "IN_PROGRESS", "IN_REVIEW", "DONE", "CANCELLED"]),
 });
 
 type CreateForm = z.infer<typeof createSchema>;
@@ -76,9 +66,7 @@ function TaskCard({
       <div className="flex items-start gap-2">
         <span className="mt-0.5 text-sm">{priorityConfig.icon}</span>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium leading-snug line-clamp-2">
-            {task.title}
-          </p>
+          <p className="text-sm font-medium leading-snug line-clamp-2">{task.title}</p>
 
           {task.project && (
             <div className="mt-1.5 flex items-center gap-1.5">
@@ -96,11 +84,7 @@ function TaskCard({
             <div
               className={cn(
                 "mt-2 flex items-center gap-1 text-[11px]",
-                overdue
-                  ? "text-red-500"
-                  : dueSoon
-                    ? "text-amber-500"
-                    : "text-muted-foreground",
+                overdue ? "text-red-500" : dueSoon ? "text-amber-500" : "text-muted-foreground",
               )}
             >
               {overdue && <AlertCircle className="h-3 w-3" />}
@@ -124,16 +108,11 @@ function TaskCard({
 
             <Select
               value={task.status}
-              onValueChange={(val: any) =>
-                onStatusChange(task.id, val as TaskStatus)
-              }
+              onValueChange={(val: any) => onStatusChange(task.id, val as TaskStatus)}
             >
               <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 text-[10px] shadow-none focus:ring-0 gap-1">
                 <div
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    TASK_STATUS_CONFIG[task.status].color,
-                  )}
+                  className={cn("h-1.5 w-1.5 rounded-full", TASK_STATUS_CONFIG[task.status].color)}
                 />
                 <SelectValue />
               </SelectTrigger>
@@ -188,13 +167,7 @@ function KanbanColumn({
   );
 }
 
-function CreateTaskDialog({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data: projects } = useProjects();
   const { mutate, isPending } = useCreateTask();
   const {
@@ -225,14 +198,8 @@ function CreateTaskDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="What needs to be done?"
-              {...register("title")}
-            />
-            {errors.title && (
-              <p className="text-xs text-destructive">{errors.title.message}</p>
-            )}
+            <Input id="title" placeholder="What needs to be done?" {...register("title")} />
+            {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
           </div>
           <div className="space-y-2">
             <Label>Project</Label>
@@ -249,9 +216,7 @@ function CreateTaskDialog({
               </SelectContent>
             </Select>
             {errors.projectId && (
-              <p className="text-xs text-destructive">
-                {errors.projectId.message}
-              </p>
+              <p className="text-xs text-destructive">{errors.projectId.message}</p>
             )}
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -275,10 +240,7 @@ function CreateTaskDialog({
             </div>
             <div className="space-y-2">
               <Label>Status</Label>
-              <Select
-                defaultValue="TODO"
-                onValueChange={(v) => setValue("status", v as any)}
-              >
+              <Select defaultValue="TODO" onValueChange={(v) => setValue("status", v as any)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
