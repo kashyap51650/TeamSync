@@ -1,14 +1,13 @@
 // UI
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Icons
 import { Calendar, GripVertical } from "lucide-react";
+import type { useDraggable } from "@dnd-kit/core";
+
+type DragListeners = ReturnType<typeof useDraggable>["listeners"];
 
 import {
   TASK_PRIORITY_CONFIG,
@@ -18,13 +17,17 @@ import {
   isDueSoon,
   isOverdue,
 } from "@/lib/utils";
-import type { Task } from "@/types";
+import type { Task, TaskStatus } from "@/types";
 import { TaskListAction } from "./task-list-action";
 
 export function TaskCard({
   task,
+  dragHandleListeners,
+  onStatusChange,
 }: Readonly<{
   task: Task;
+  dragHandleListeners?: DragListeners;
+  onStatusChange?: (taskId: string, newStatus: TaskStatus) => void;
 }>) {
   const priorityConfig = TASK_PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.dueDate);
@@ -46,7 +49,15 @@ export function TaskCard({
     <div className="group rounded-lg border border-border bg-card p-3 shadow-sm transition-all duration-150 hover:border-primary/30 hover:shadow-md">
       <div className="flex items-start gap-2">
         {/* Drag handle */}
-        <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 cursor-grab" />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Drag to reorder"
+          className="mt-0.5 h-5 w-5 shrink-0 cursor-grab touch-none opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 active:cursor-grabbing"
+          {...(dragHandleListeners ?? {})}
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground/40" />
+        </Button>
 
         <div className="flex-1 min-w-0 space-y-2">
           {/* Title row */}
@@ -59,7 +70,7 @@ export function TaskCard({
             >
               {task.title}
             </p>
-            <TaskListAction task={task} />
+            <TaskListAction task={task} onStatusChange={onStatusChange} />
           </div>
 
           {/* Meta row */}
@@ -68,12 +79,7 @@ export function TaskCard({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span
-                    className={cn(
-                      "text-sm cursor-default",
-                      priorityConfig.color,
-                    )}
-                  >
+                  <span className={cn("text-sm cursor-default", priorityConfig.color)}>
                     {priorityConfig.icon}
                   </span>
                 </TooltipTrigger>
@@ -107,9 +113,7 @@ export function TaskCard({
                   {getInitials(task.assignedTo.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[11px] text-muted-foreground">
-                {task.assignedTo.name}
-              </span>
+              <span className="text-[11px] text-muted-foreground">{task.assignedTo.name}</span>
             </div>
           )}
         </div>
