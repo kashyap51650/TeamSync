@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { handlePrismaError } from "@/lib/prisma-error";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Prisma } from "@prisma/client";
 import { Crown, Shield, User } from "lucide-react";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";

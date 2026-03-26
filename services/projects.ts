@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import {
   findProjectById,
   findProjectMembers,
@@ -6,14 +5,6 @@ import {
   findProjectTasks,
 } from "@/server/repositories/projects.repository";
 import { cacheTag } from "next/cache";
-
-async function getOrgId(userId: string): Promise<string | null> {
-  const membership = await prisma.teamMember.findFirst({
-    where: { userId },
-    orderBy: { joinedAt: "desc" },
-  });
-  return membership?.organizationId ?? null;
-}
 
 export async function fetchProjects(userId?: string, orgId?: string) {
   "use cache";
@@ -30,9 +21,7 @@ export async function fetchProjects(userId?: string, orgId?: string) {
 
     // Filter projects to include only those where the user is a member or creator
     const filteredProjects = projects.filter((project) => {
-      const isMember = project.members.some(
-        (member) => member.userId === userId,
-      );
+      const isMember = project.members.some((member) => member.userId === userId);
       const isCreator = project.createdById === userId;
       return isMember || isCreator;
     });

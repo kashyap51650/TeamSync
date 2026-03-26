@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DailyProductivity } from "@/types";
 import { format, parseISO } from "date-fns";
 import { use } from "react";
@@ -29,10 +23,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       </p>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2 text-sm">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ background: p.color }}
-          />
+          <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
           <span className="capitalize text-muted-foreground">{p.name}:</span>
           <span className="font-semibold">{p.value}</span>
         </div>
@@ -41,25 +32,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export function ProductivityChart({
-  data,
-}: Readonly<{ data: Promise<DailyProductivity[]> }>) {
+export function ProductivityChart({ data }: Readonly<{ data: Promise<DailyProductivity[]> }>) {
   const productivityData = use(data);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Team Productivity</CardTitle>
-        <CardDescription>
-          Tasks created vs completed over the last 14 days
-        </CardDescription>
+        <CardDescription>Tasks created vs completed over the last 14 days</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={220}>
-          <AreaChart
-            data={productivityData}
-            margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
-          >
+          <AreaChart data={productivityData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="created" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
@@ -70,11 +54,7 @@ export function ProductivityChart({
                 <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="hsl(var(--border))"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}

@@ -1,5 +1,10 @@
 "use client";
+import { deleteProjectAction } from "@/actions/project";
+import { TaskStatus, TeamMemberDropdownItem } from "@/types";
+import { Project } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { CreateTaskDialog } from "../task/create-task-dialog";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -8,16 +13,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { CreateTaskDialog } from "../task/create-task-dialog";
 import { AddMemberDialog } from "./add-member-dialog";
 import { EditProjectDialog } from "./edit-project-dialog";
-import { deleteProjectAction } from "@/actions/project";
-import { useState } from "react";
-import { TaskStatus, TeamMemberDropdownItem } from "@/types";
-import { Project } from "@prisma/client";
 
 export function ProjectActionDropdown({
-  userId,
   projectId,
   members,
   project,

@@ -1,5 +1,3 @@
-import { ColumnDef } from "@tanstack/react-table";
-
 export const ProjectTable = () => {
   return (
     <div>
